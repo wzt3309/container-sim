@@ -13,3 +13,7 @@ buildNumber.properties
 
 ### JetBrain
 .idea/
+*.iml
+
+### cloudsim apidocs
+docs/cloudsim-apidocs/

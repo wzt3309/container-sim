@@ -16,4 +16,4 @@ buildNumber.properties
 *.iml
 
 ### cloudsim apidocs
-docs/cloudsim-apidocs/
+ccsim/docs/cloudsim-apidocs/

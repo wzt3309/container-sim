@@ -70,9 +70,9 @@ public class ExampleOne {
 
     // 3. create host with its id and a list of pes
     int hostId = 0;
-    int ram = 2048; // host memory (MB)
-    int bw = 10000; // bandwidth (Mbps)
-    int storage = 1_000_000; // host storage (MB)
+    int ram = 2048; // host memory (2048 MB)
+    int bw = 10000; // bandwidth (10 Mbps)
+    int storage = 1_000_000; // host storage (1 TB)
     hostList.add(
         new Host(
             hostId,

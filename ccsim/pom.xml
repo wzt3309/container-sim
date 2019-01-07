@@ -44,6 +44,11 @@
             <systemPath>${basedir}/src/main/resources/lib/cloudsim-examples-4.0.jar</systemPath>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>27.0.1-jre</version>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>

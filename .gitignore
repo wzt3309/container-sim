@@ -15,5 +15,8 @@ buildNumber.properties
 .idea/
 *.iml
 
-## data
+### data
 data/
+
+### ipython
+.ipynb_checkpoints/

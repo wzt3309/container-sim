@@ -37,6 +37,7 @@ public class ContainerSchedulerTimeSharedOverAllocation extends ContainerSchedul
     }
 
     List<String> containersMigratingIn = getContainersMigratingIn();
+    // 容器迁移是不需要时间的，因此正在迁移进来的容器其实还在源主机上运行
     if (containersMigratingIn.contains(containerUid)) {
       totalRequiredMips = 0.0;
     }
@@ -46,6 +47,7 @@ public class ContainerSchedulerTimeSharedOverAllocation extends ContainerSchedul
     if (getAvailableMips() >= totalRequiredMips) {
       List<Double> allocatedMips = new ArrayList<>();
       for (double mips: requestedMipsTruncated) {
+        // 容器迁移是不需要时间的，因此正在迁移进来的容器其实还在源主机上运行
         if (containersMigratingIn.contains(containerUid)) {
           mips = 0.0;
         }
@@ -86,6 +88,7 @@ public class ContainerSchedulerTimeSharedOverAllocation extends ContainerSchedul
       }
 
       requestedMipsTruncatedMap.put(containerUid, requestedMipsTruncated);
+      // 容器迁移是不需要时间的，因此正在迁移进来的容器其实还在源主机上运行
       if (containersMigratingIn.contains(containerUid)) {
         totalRequiredMips = 0.0;
       }
@@ -105,6 +108,7 @@ public class ContainerSchedulerTimeSharedOverAllocation extends ContainerSchedul
       List<Double> updateMipsAllocation = new ArrayList<>();
 
       for (double mips: requestedMipsTruncated) {
+        // 容器迁移是不需要时间的，因此正在迁移进来的容器其实还在源主机上运行
         if (containersMigratingIn.contains(containerUid)) {
           mips = 0.0;
         } else {

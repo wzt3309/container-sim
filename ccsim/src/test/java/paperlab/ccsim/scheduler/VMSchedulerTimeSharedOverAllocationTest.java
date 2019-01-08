@@ -63,6 +63,45 @@ public class VMSchedulerTimeSharedOverAllocationTest {
     }
   }
 
+  @Test
+  public void deallocatePersForVm() {
+    VMPeProvisioner vmPeProvisioner0 = new VMPeProvisionerSimple(1000);
+    VMPeProvisioner vmPeProvisioner1 = new VMPeProvisionerSimple(1000);
+
+    List<VMPe> peList = new ArrayList<>();
+    VMPe vmPe0 = new VMPe(0, vmPeProvisioner0);
+    VMPe vmPe1 = new VMPe(1, vmPeProvisioner1);
+    peList.add(vmPe0);
+    peList.add(vmPe1);
+
+    VMScheduler vmScheduler = new VMSchedulerTimeSharedOverAllocation(peList);
+    assertThat(vmScheduler.getAvailableMips()).isEqualTo(getTotalAvailableMips(peList));
+
+    VM vm0 = mock(VM.class);
+    VM vm1 = mock(VM.class);
+    when(vm0.getUid()).thenReturn("1-0");
+    when(vm1.getUid()).thenReturn("1-1");
+
+    List<Double> vm0ReqMips, vm1ReqMips;
+
+    vm0ReqMips = Arrays.asList(300.0, 400.0);
+    vmScheduler.allocatePesForVm(vm0, vm0ReqMips);
+    assertThat(vmScheduler.getAvailableMips()).isEqualTo(getTotalAvailableMips(peList));
+    assertThat(vmScheduler.getAllocatedMipsForContainerVm(vm0)).containsSequence(300.0, 400.0);
+
+    vm1ReqMips = Arrays.asList(400.0, 400.0);
+    vmScheduler.allocatePesForVm(vm1, vm1ReqMips);
+    // 回收vm0
+    vmScheduler.deallocatePersForVm(vm0);
+    assertThat(vmScheduler.getAvailableMips()).isEqualTo(getTotalAvailableMips(peList));
+    assertThat(vmScheduler.getAllocatedMipsForContainerVm(vm0)).isNull();
+    assertThat(vmScheduler.getAvailableMips()).isEqualTo(2000 - sum(vm1ReqMips));
+
+    // 回收全部
+    vmScheduler.deallocatePesForAllContainerVms();
+    assertThat(vmScheduler.getAvailableMips()).isEqualTo(2000);
+  }
+
   private static double getTotalAvailableMips(List<VMPe> peList) {
     return peList.stream().mapToDouble(pe -> pe.getVmPeProvisioner().getAvailableMips()).sum();
   }

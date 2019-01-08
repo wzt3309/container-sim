@@ -184,10 +184,12 @@ public class VMSchedulerTimeShared extends VMScheduler {
       pe.getVmPeProvisioner().deallocatedMipsForAllContainerVms();
     }
 
+    // 重新分配划分给vm的mips
     for (Map.Entry<String, List<Double>> entry: requestedMipsMap.entrySet()) {
       allocatePesForVm(entry.getKey(), entry.getValue());
     }
 
+    // 根据新的mips分配列表来更新Pe
     updatePeProvisioning();
   }
 

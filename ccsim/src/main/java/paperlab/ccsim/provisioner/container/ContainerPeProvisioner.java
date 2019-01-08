@@ -43,7 +43,7 @@ public abstract class ContainerPeProvisioner {
     return mips;
   }
 
-  protected void setMips(double mips) {
+  public void setMips(double mips) {
     this.mips = mips;
   }
 

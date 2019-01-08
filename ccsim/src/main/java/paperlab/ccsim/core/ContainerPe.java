@@ -22,6 +22,26 @@ public class ContainerPe {
     this.id = id;
   }
 
+  public double getMips() {
+    return containerPeProvisioner.getMips();
+  }
+
+  public void setMips(double mips) {
+    containerPeProvisioner.setMips(mips);
+  }
+
+  public double getAvailableMips() {
+    return containerPeProvisioner.getAvailableMips();
+  }
+
+  public void deallocatedMipsForAllContainers() {
+    containerPeProvisioner.deallocatedMipsForAllContainers();
+  }
+
+  public boolean allocateMipsForContainer(String containerUid, double mips) {
+    return containerPeProvisioner.allocateMipsForContainer(containerUid, mips);
+  }
+
   public ContainerPeProvisioner getContainerPeProvisioner() {
     return containerPeProvisioner;
   }

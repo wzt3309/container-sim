@@ -84,13 +84,13 @@ public class VMSchedulerTimeSharedOverAllocation extends VMSchedulerTimeShared {
    */
   private void allocatePesForVMDueToOverAllocation() {
     double totalRequiredMipsByAllVMs = 0;
+    double peCapacity = getPeCapacity();
     Map<String, List<Double>> requestedMipsTruncatedMap = new HashMap<>();
     List<String> vmsMigratingIn = getVmsMigratingIn();
     List<String> vmsMigratingOut = getVmsMigratingOut();
 
     for (Map.Entry<String, List<Double>> entry: getRequestedMipsMap().entrySet()) {
       double totalRequiredMips = 0;
-      double peCapacity = getPeCapacity();
       String vmUid = entry.getKey();
       List<Double> requestedMips = entry.getValue();
       List<Double> requestedMipsTruncated = new ArrayList<>();

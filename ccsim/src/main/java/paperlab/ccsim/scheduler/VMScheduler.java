@@ -43,10 +43,10 @@ public abstract class VMScheduler {
   /**
    * 分配Pe给虚拟机
    * @param vm 虚拟机
-   * @param mipsShare 需要分配给虚拟机的mips，这是一个list，因为一个vm可能需要多个Pe且需要不同的mips
+   * @param requestedMips 需要分配给虚拟机的mips，这是一个list，因为一个vm可能需要多个Pe且需要不同的mips
    * @return 如果分配成功，返回true 否则false
    */
-  public abstract boolean allocatePesForVm(VM vm, List<Double> mipsShare);
+  public abstract boolean allocatePesForVm(VM vm, List<Double> requestedMips);
 
   /**
    * 从虚拟机上回收Pe

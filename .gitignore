@@ -20,3 +20,7 @@ data/
 
 ### ipython
 .ipynb_checkpoints/
+
+### Virtual Studio
+predict/.vs
+predict/*.pyproj*

@@ -5,6 +5,8 @@ from sklearn import svm
 from sklearn.model_selection import TimeSeriesSplit
 from read_data import split_to_xy
 from metrics import cwcf, picpf, pinewf
+from sklearn.base import BaseEstimator, RegressorMixin
+from sklearn.svm import SVR
 
 """使用k-折交叉验证获得svm模型的最优参数gamma_u, C_u, gamma_l, C_l
 """
@@ -143,3 +145,41 @@ def pso_bounds(gamma_u=(0.001, 1.0), C_u=(10, 30), gamma_l=(0.001, 1.0), C_l=(10
 
     bounds = np.column_stack((gamma_u_bounds, C_u_bounds, gamma_l_bounds, C_l_bounds))
     return bounds[0], bounds[1]
+
+
+class PISvm(BaseEstimator, RegressorMixin):
+    """重新调整了整个训练器，让它符合sklearn的estimator形式，便于使用GridSearchCV 和 RandomSearchCV
+    """
+    def __init__(self, gamma_u=0.001, C_u=10, gamma_l=0.001, C_l=10, mu=0.6, eta=10):
+        self.gamma_u = gamma_u
+        self.C_u = C_u
+        self.gamma_l = gamma_l
+        self.C_l = C_l
+        self.mu = mu
+        self.eta = eta
+        self.svm_u = SVR(gamma=self.gamma_u, C=self.C_u)
+        self.svm_l = SVR(gamma=self.gamma_l, C=self.C_l)
+
+    def fit(self, X, y=None):
+        X_u, y_u = X[:, :2], y[:, 0]
+        X_l, y_l = X[:, 2:], y[:, 1]
+        self.svm_u.fit(X_u, y_u)
+        self.svm_l.fit(X_l, y_l)
+        return self
+
+    def predict(self, X):
+        X_u, X_l = X[:, :2], X[:, 2:]
+        pu = self.svm_u.predict(X_u)
+        pl = self.svm_l.predict(X_l)
+        p = np.column_stack((pu, pl))
+        return p
+
+    def score(self, X, y, sample_weight=None):
+        p = self.predict(X)
+        t = y[:, 2]
+        pu, pl = p[:, 0], p[:, 1]
+        picp = picpf(t, pu, pl)
+        pinew = pinewf(pu, pl)
+        cwc = cwcf(picp, pinew, self.mu, self.eta)
+        self.result = (cwc, picp, pinew)
+        return cwc

@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def cwcf(picp, pinew, mu=0.6, eta=10):
+def cwcf(picp, pinew, mu=0.9, eta=10):
     gamma = 1
     if picp >= mu:
         gamma = 0

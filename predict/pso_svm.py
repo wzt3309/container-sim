@@ -150,7 +150,7 @@ def pso_bounds(gamma_u=(0.001, 1.0), C_u=(10, 30), gamma_l=(0.001, 1.0), C_l=(10
 class PISvm(BaseEstimator, RegressorMixin):
     """重新调整了整个训练器，让它符合sklearn的estimator形式，便于使用GridSearchCV 和 RandomSearchCV
     """
-    def __init__(self, gamma_u=0.001, C_u=10, gamma_l=0.001, C_l=10, mu=0.6, eta=10):
+    def __init__(self, gamma_u=0.001, C_u=10, gamma_l=0.001, C_l=10, mu=0.9, eta=10):
         self.gamma_u = gamma_u
         self.C_u = C_u
         self.gamma_l = gamma_l

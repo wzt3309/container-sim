@@ -11,7 +11,6 @@ import read_data as rd
 from metrics import cwcf, picpf, pinewf
 
 
-
 def xxx_predict(train, test, xxx, d):
     X_t, y_t = rd.split_to_xy(train, d)
     X_e, y_e = rd.split_to_xy(test, d)
@@ -163,3 +162,49 @@ class XXXmodel(BaseEstimator, RegressorMixin):
         pinew = pinewf(pu, pl)
         cwc = cwcf(picp, pinew, self.mu, self.eta)
         return cwc
+
+
+def plt_xxx_model(model, save=False):
+    ts_sm, ts_tr, ts_pe = rd.load_sp()
+
+    plt.figure(figsize=(15, 4))
+    X_train, y_train, X_test, y_test = rd.split_to_XyTT(ts_sm)
+    xx = XXXmodel(model)
+    xx.fit(X_train, y_train)
+    p = xx.predict(X_test)
+    pu, pl, t = p[:, 0], p[:, 1], y_test[:, 2]
+    plt.subplot(131)
+    plt.title('sm.1')
+    l1, = plt.plot(pu, color='blue', marker='o', linestyle='--')
+    l2, = plt.plot(pl, color='blue', marker='o', linestyle=':')
+    l3, = plt.plot(t, color='gray', marker='x')
+    plt.legend(handles=[l1, l2, l3], labels=['up', 'low', 'true-value'], loc='upper right')
+    #     print(xx.mscore())
+
+    X_train, y_train, X_test, y_test = rd.split_to_XyTT(ts_tr)
+    xx = XXXmodel(model)
+    xx.fit(X_train, y_train)
+    p = xx.predict(X_test)
+    pu, pl, t = p[:, 0], p[:, 1], y_test[:, 2]
+    plt.subplot(132)
+    plt.title('tr.1')
+    l1, = plt.plot(pu, color='blue', marker='o', linestyle='--')
+    l2, = plt.plot(pl, color='blue', marker='o', linestyle=':')
+    l3, = plt.plot(t, color='gray', marker='x')
+    plt.legend(handles=[l1, l2, l3], labels=['up', 'low', 'true-value'], loc='upper right')
+    #     print(xx.mscore())
+
+    X_train, y_train, X_test, y_test = rd.split_to_XyTT(ts_pe)
+    xx = XXXmodel(model)
+    xx.fit(X_train, y_train)
+    p = xx.predict(X_test)
+    pu, pl, t = p[:, 0], p[:, 1], y_test[:, 2]
+    plt.subplot(133)
+    plt.title('pe.1')
+    l1, = plt.plot(pu, color='blue', marker='o', linestyle='--')
+    l2, = plt.plot(pl, color='blue', marker='o', linestyle=':')
+    l3, = plt.plot(t, color='gray', marker='x')
+    plt.legend(handles=[l1, l2, l3], labels=['up', 'low', 'true-value'], loc='upper right')
+    if save:
+        plt.savefig('./fig/3-10_' + model, dpi=600)
+#     print(xx.mscore())

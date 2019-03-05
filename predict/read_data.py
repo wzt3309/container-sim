@@ -157,3 +157,10 @@ def split_to_Xy(ts, ts_u, ts_l, d_u=range(1,3), d_l=range(1,3)):
     X = np.column_stack((X1, X2))
     y = np.column_stack((y1, y2, y3))
     return X, y
+
+
+def split_to_XyTT(ts):
+    ts_u_train, ts_u_test, ts_l_train, ts_l_test, ts_train, ts_test = rd.split_train_test(ts)
+    X_train, y_train = split_to_Xy(ts_train, ts_u_train, ts_l_train)
+    X_test, y_test = split_to_Xy(ts_test, ts_u_test, ts_l_test)
+    return  X_train, y_train, X_test, y_test

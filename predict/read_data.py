@@ -149,11 +149,11 @@ def split_to_xy(ts, d=range(1, 3)):
     return x, y
 
 
-def split_to_Xy(ts, ts_u, ts_l, d=range(1, 3)):
+def split_to_Xy(ts, ts_u, ts_l, d_u=range(1,3), d_l=range(1,3)):
     """将数据变成矩阵形式，X是4列矩阵，前2是up，后2是low，y是3列矩阵，0是up，1是low，2是真值"""
-    X1, y1 = split_to_xy(ts_u, d)
-    X2, y2 = split_to_xy(ts_l, d)
-    y3 = ts[len(d):]
+    X1, y1 = split_to_xy(ts_u, d_u)
+    X2, y2 = split_to_xy(ts_l, d_l)
+    y3 = ts[2:]
     X = np.column_stack((X1, X2))
     y = np.column_stack((y1, y2, y3))
     return X, y

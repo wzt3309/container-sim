@@ -5,10 +5,11 @@ from sklearn.linear_model import LinearRegression, BayesianRidge
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.svm import SVR
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.base import BaseEstimator, RegressorMixin
 
 import read_data as rd
 from metrics import cwcf, picpf, pinewf
-from pyswarms.utils.plotters import plot_cost_history, plot_contour, plot_surface
+
 
 
 def xxx_predict(train, test, xxx, d):
@@ -52,7 +53,7 @@ def xxx_cross_validation(t, u, l, xxx_u, xxx_l, mu=0.9, eta=10, cv=3, is_plot=Fa
 
 def xxx_test_validation(test, u_train, u_test, l_train, l_test, xxx_u, xxx_l, mu=0.9, eta=10,
                         is_plot=False, plt_num=111):
-    pred_u = xxx_predict(u_train, u_test, xxx_u, range(1,3))
+    pred_u = xxx_predict(u_train, u_test, xxx_u, range(1, 3))
     pred_l = xxx_predict(l_train, l_test, xxx_l, range(3))
     d = max(len(test) - len(pred_u), len(test) - len(pred_l))
 
@@ -64,7 +65,7 @@ def xxx_test_validation(test, u_train, u_test, l_train, l_test, xxx_u, xxx_l, mu
     picp = picpf(test[d:], pred_u, pred_l)
     pinew = pinewf(pred_u, pred_l)
     cwc = cwcf(picp, pinew, mu, eta)
-    return cwc, picp, pinew, pred_u, pred_l, test[d:]
+    return cwc, picp, pinew
 
 
 def predict_sp_diff(model='linear'):
@@ -85,38 +86,8 @@ def predict_diff(ts, model, mu=0.9, eta=10, cv=3, is_plt=False, plt_num=111):
     # split to train and test
     ts_u_train, ts_u_test, ts_l_train, ts_l_test, ts_train, ts_test = rd.split_train_test(ts)
     print(model)
-    if model == 'linear':
-        xxx_cv_u = LinearRegression()
-        xxx_cv_l = LinearRegression()
-
-        xxx_u = LinearRegression()
-        xxx_l = LinearRegression()
-    elif model == 'bayesian':
-        xxx_cv_u = LinearRegression()
-        xxx_cv_l = LinearRegression()
-
-        xxx_u = BayesianRidge()
-        xxx_l = BayesianRidge()
-    elif model == 'cart':
-        xxx_cv_u = DecisionTreeRegressor()
-        xxx_cv_l = DecisionTreeRegressor()
-
-        xxx_u = DecisionTreeRegressor()
-        xxx_l = DecisionTreeRegressor()
-    elif model == 'svm':
-        xxx_cv_u = SVR(gamma=0.001, C=20)
-        xxx_cv_l = SVR(gamma=0.001, C=20)
-
-        xxx_u = SVR(gamma=0.001, C=20)
-        xxx_l = SVR(gamma=0.001, C=20)
-    elif model == 'rfr':
-        xxx_cv_u = RandomForestRegressor(n_estimators=50)
-        xxx_cv_l = RandomForestRegressor(n_estimators=50)
-
-        xxx_u = RandomForestRegressor(n_estimators=50)
-        xxx_l = RandomForestRegressor(n_estimators=50)
-    else:
-        raise RuntimeError('not support model type')
+    xxx_cv_u, xxx_cv_l = choose_model(model)
+    xxx_u, xxx_l = choose_model(model)
 
     print('Result of Cross validation: ')
     cv_cwc, cv_picp, cv_pinew = xxx_cross_validation(ts_train, ts_u_train, ts_l_train,
@@ -126,9 +97,69 @@ def predict_diff(ts, model, mu=0.9, eta=10, cv=3, is_plt=False, plt_num=111):
     print('cwc %f, picp %f, pinew %f' % (cv_cwc, cv_picp, cv_pinew))
 
     print('Result of Test validation: ')
-    cwc, picp, pinew, pred_u, pred_l, t = xxx_test_validation(ts_test, ts_u_train, ts_u_test, ts_l_train, ts_l_test,
+    cwc, picp, pinew = xxx_test_validation(ts_test, ts_u_train, ts_u_test, ts_l_train, ts_l_test,
                                            xxx_u, xxx_l,
                                            mu, eta,
                                            is_plt, plt_num)
     print('cwc %f, picp %f, pinew %f' % (cwc, picp, pinew))
-    return cwc, picp, pinew, pred_u, pred_l, t
+    return cwc, picp, pinew
+
+
+def choose_model(model):
+    if model == 'linear':
+        xxx_u = LinearRegression()
+        xxx_l = LinearRegression()
+    elif model == 'bayesian':
+        xxx_u = BayesianRidge()
+        xxx_l = BayesianRidge()
+    elif model == 'cart':
+        xxx_u = DecisionTreeRegressor()
+        xxx_l = DecisionTreeRegressor()
+    elif model == 'svm':
+        xxx_u = SVR(gamma=0.001, C=20)
+        xxx_l = SVR(gamma=0.001, C=20)
+    elif model == 'rfr':
+        xxx_u = RandomForestRegressor(n_estimators=50)
+        xxx_l = RandomForestRegressor(n_estimators=50)
+    else:
+        raise RuntimeError('not support model type')
+    return xxx_u, xxx_l
+
+
+class XXXmodel(BaseEstimator, RegressorMixin):
+    def __init__(self, model='linear', mu=0.9, eta=10):
+        self.mu = mu
+        self.eta = eta
+        self.xxx_u, self.xxx_l = choose_model(model)
+
+    def fit(self, X, y=None):
+        X_u, y_u = X[:, :2], y[:, 0]
+        X_l, y_l = X[:, 2:], y[:, 1]
+        self.xxx_u.fit(X_u, y_u)
+        self.xxx_l.fit(X_l, y_l)
+        return self
+
+    def predict(self, X):
+        X_u, X_l = X[:, :2], X[:, 2:]
+        pu = self.xxx_u.predict(X_u)
+        pl = self.xxx_l.predict(X_l)
+        p = np.column_stack((pu, pl))
+        return p
+
+    def mscore(self, X, y, sample_weight=None):
+        p = self.predict(X)
+        t = y[:, 2]
+        pu, pl = p[:, 0], p[:, 1]
+        picp = picpf(t, pu, pl)
+        pinew = pinewf(pu, pl)
+        cwc = cwcf(picp, pinew, self.mu, self.eta)
+        return cwc, picp, pinew
+
+    def score(self, X, y, sample_weight=None):
+        p = self.predict(X)
+        t = y[:, 2]
+        pu, pl = p[:, 0], p[:, 1]
+        picp = picpf(t, pu, pl)
+        pinew = pinewf(pu, pl)
+        cwc = cwcf(picp, pinew, self.mu, self.eta)
+        return cwc

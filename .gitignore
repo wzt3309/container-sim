@@ -17,7 +17,11 @@ buildNumber.properties
 
 ### ipython
 .ipynb_checkpoints/
+__pycache__
 
 ### Virtual Studio
 predict/.vs
 predict/*.pyproj*
+
+### macOS
+.DS_store

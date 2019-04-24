@@ -1,8 +1,10 @@
 package paperlab.ccsim.core;
 
+import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.VmStateHistoryEntry;
 import org.cloudbus.cloudsim.container.containerProvisioners.ContainerBwProvisioner;
 import org.cloudbus.cloudsim.container.containerProvisioners.ContainerRamProvisioner;
+import org.cloudbus.cloudsim.container.core.Container;
 import paperlab.ccsim.scheduler.ContainerScheduler;
 
 import java.util.ArrayList;

@@ -1,7 +1,5 @@
 package paperlab.ccsim.core;
 
-import paperlab.ccsim.provisioner.container.ContainerPeProvisioner;
-
 /**
  * 代表vm中分配给container的处理器
  */

@@ -1,6 +1,5 @@
 package paperlab.ccsim.scheduler;
 
-import paperlab.ccsim.core.Container;
 import paperlab.ccsim.core.ContainerPe;
 
 import java.util.*;

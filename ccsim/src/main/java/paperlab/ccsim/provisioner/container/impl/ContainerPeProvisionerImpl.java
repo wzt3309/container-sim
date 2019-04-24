@@ -1,18 +1,18 @@
 package paperlab.ccsim.provisioner.container.impl;
 
-import paperlab.ccsim.core.Container;
-import paperlab.ccsim.provisioner.container.ContainerPeProvisioner;
+import org.cloudbus.cloudsim.container.containerProvisioners.ContainerPeProvisioner;
+import org.cloudbus.cloudsim.container.core.Container;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ContainerPeProvisionerSimple extends ContainerPeProvisioner {
+public class ContainerPeProvisionerImpl extends ContainerPeProvisioner {
   // value是分配给容器每个Pe的mips量，list的下标即为Pe的id
   private Map<String, List<Double>> mipsTable;
 
-  public ContainerPeProvisionerSimple(double mips) {
+  public ContainerPeProvisionerImpl(double mips) {
     super(mips);
     mipsTable = new HashMap<>();
   }
@@ -75,8 +75,8 @@ public class ContainerPeProvisionerSimple extends ContainerPeProvisioner {
   }
 
   @Override
-  public void deallocatedMipsForAllContainers() {
-    super.deallocatedMipsForAllContainers();
+  public void deallocateMipsForAllContainers() {
+    super.deallocateMipsForAllContainers();
     mipsTable.clear();
   }
 

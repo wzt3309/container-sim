@@ -1,7 +1,7 @@
 package paperlab.ccsim.provisioner.container.impl;
 
-import paperlab.ccsim.core.Container;
-import paperlab.ccsim.provisioner.container.ContainerBwProvisioner;
+import org.cloudbus.cloudsim.container.containerProvisioners.ContainerBwProvisioner;
+import org.cloudbus.cloudsim.container.core.Container;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,13 +14,14 @@ public class ContainerBwProvisionerImpl extends ContainerBwProvisioner {
     bwTable = new HashMap<>();
   }
 
+
   @Override
   public boolean allocateBwForContainer(Container container, long bw) {
-    long availableBw = getAvailableBw();
+    long availableBw = getAvailableVmBw();
     long allocatedBwForContainerVm = getAllocatedBwForContainer(container);
     if (isSuitableForContainer(container, bw)) {
       availableBw -= (bw - allocatedBwForContainerVm);
-      setAvailableBw(availableBw);
+      setAvailableVmBw(availableBw);
       bwTable.put(container.getUid(), bw);
       container.setCurrentAllocatedBw(bw);
       return true;
@@ -39,22 +40,22 @@ public class ContainerBwProvisionerImpl extends ContainerBwProvisioner {
   }
 
   @Override
-  public void deallocatedBwForContainer(Container container) {
+  public void deallocateBwForContainer(Container container) {
     long allocatedBw = getAllocatedBwForContainer(container);
-    setAvailableBw(getAvailableBw() + allocatedBw);
+    setAvailableVmBw(getAvailableVmBw() + allocatedBw);
     bwTable.remove(container.getUid());
     container.setCurrentAllocatedBw(0);
   }
 
   @Override
-  public void deallocatedBwForAllContainers() {
-    super.deallocatedBwForAllContainers();
-    bwTable.clear();
+  public boolean isSuitableForContainer(Container container, long bw) {
+    return getAvailableVmBw() + getAllocatedBwForContainer(container) >= bw;
   }
 
   @Override
-  public boolean isSuitableForContainer(Container container, long bw) {
-    return getAvailableBw() + getAllocatedBwForContainer(container) >= bw;
+  public void deallocateBwForAllContainers() {
+    super.deallocateBwForAllContainers();
+    bwTable.clear();
   }
 
   protected Map<String, Long> getBwTable() {

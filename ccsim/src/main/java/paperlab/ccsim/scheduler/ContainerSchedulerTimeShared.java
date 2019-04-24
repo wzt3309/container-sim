@@ -1,7 +1,6 @@
 package paperlab.ccsim.scheduler;
 
 import org.cloudbus.cloudsim.Log;
-import paperlab.ccsim.core.Container;
 import paperlab.ccsim.core.ContainerPe;
 
 import java.util.*;

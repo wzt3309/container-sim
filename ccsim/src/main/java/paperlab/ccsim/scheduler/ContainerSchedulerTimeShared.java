@@ -1,7 +1,8 @@
 package paperlab.ccsim.scheduler;
 
 import org.cloudbus.cloudsim.Log;
-import paperlab.ccsim.core.ContainerPe;
+import org.cloudbus.cloudsim.container.containerProvisioners.ContainerPe;
+import org.cloudbus.cloudsim.container.core.Container;
 
 import java.util.*;
 
@@ -38,12 +39,12 @@ public class ContainerSchedulerTimeShared extends ContainerScheduler {
     getPeMap().clear();
     // 重置pe分配
     for (ContainerPe pe: getPeList()) {
-      pe.deallocatedMipsForAllContainers();
+      pe.getContainerPeProvisioner().deallocateMipsForAllContainers();
     }
 
     Iterator<ContainerPe> peItor = getPeList().iterator();
     ContainerPe pe = peItor.next();
-    double peAvailableMips = pe.getAvailableMips();
+    double peAvailableMips = pe.getContainerPeProvisioner().getAvailableMips();
 
     for (Map.Entry<String, List<Double>> entry: getMipsMap().entrySet()) {
       String containerUid = entry.getKey();
@@ -52,11 +53,11 @@ public class ContainerSchedulerTimeShared extends ContainerScheduler {
       for (double mips: entry.getValue()) {
         while (mips >= 0.1) {
           if (peAvailableMips >= mips) {
-            pe.allocateMipsForContainer(containerUid, mips);
+            pe.getContainerPeProvisioner().allocateMipsForContainer(containerUid, mips);
             getPeMap().get(containerUid).add(pe);
             peAvailableMips -= mips;
           } else {
-            pe.allocateMipsForContainer(containerUid, peAvailableMips);
+            pe.getContainerPeProvisioner().allocateMipsForContainer(containerUid, peAvailableMips);
             if (peAvailableMips != 0) {
               getPeMap().get(containerUid).add(pe);
             }
@@ -68,7 +69,7 @@ public class ContainerSchedulerTimeShared extends ContainerScheduler {
               Log.printConcatLine("There is no enough MIPS (", mips, ") to allocate to container ", containerUid);
             }
             pe = peItor.next();
-            peAvailableMips = pe.getAvailableMips();
+            peAvailableMips = pe.getContainerPeProvisioner().getAvailableMips();
           }
         }
       }
@@ -137,7 +138,7 @@ public class ContainerSchedulerTimeShared extends ContainerScheduler {
     getMipsMap().clear();
     setAvailableMips(getTotalMips(getPeList()));
     for (ContainerPe pe: getPeList()) {
-      pe.deallocatedMipsForAllContainers();
+      pe.getContainerPeProvisioner().deallocateMipsForAllContainers();
     }
 
     // 重新分配划分给容器的mips

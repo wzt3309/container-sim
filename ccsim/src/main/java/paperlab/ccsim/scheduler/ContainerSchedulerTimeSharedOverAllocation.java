@@ -1,6 +1,6 @@
 package paperlab.ccsim.scheduler;
 
-import paperlab.ccsim.core.ContainerPe;
+import org.cloudbus.cloudsim.container.containerProvisioners.ContainerPe;
 
 import java.util.ArrayList;
 import java.util.HashMap;

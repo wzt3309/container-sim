@@ -1,6 +1,6 @@
 package paperlab.ccsim.util;
 
-import paperlab.ccsim.core.ContainerPe;
+import org.cloudbus.cloudsim.container.containerProvisioners.ContainerPe;
 
 import java.util.List;
 

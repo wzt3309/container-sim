@@ -1,6 +1,7 @@
 package paperlab.ccsim.scheduler;
 
-import paperlab.ccsim.core.ContainerPe;
+import org.cloudbus.cloudsim.container.containerProvisioners.ContainerPe;
+import org.cloudbus.cloudsim.container.core.Container;
 
 import java.util.*;
 
@@ -64,7 +65,7 @@ public abstract class ContainerScheduler {
     peMap.clear();
     availableMips = getTotalMips(peList);
     for (ContainerPe pe: peList) {
-      pe.deallocatedMipsForAllContainers();
+      pe.getContainerPeProvisioner().deallocateMipsForAllContainers();
     }
   }
 
@@ -95,9 +96,9 @@ public abstract class ContainerScheduler {
    */
   public double getMaxAvailableMips() {
     ContainerPe max = peList.stream()
-        .max(Comparator.comparingDouble(ContainerPe::getAvailableMips))
+        .max(Comparator.comparingDouble(pe -> pe.getContainerPeProvisioner().getAvailableMips()))
         .orElse(null);
-    return max != null ? max.getAvailableMips() : 0;
+    return max != null ? max.getContainerPeProvisioner().getAvailableMips() : 0;
   }
 
   /**

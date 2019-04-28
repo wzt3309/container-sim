@@ -212,11 +212,12 @@ CloudSim4.0版本（ContainerCloudSim）中加入了对CaaS环境中资源管理
 
 PlanetLab实验数据支持模块，允许使用PlanetLab的容器负载数据进行仿真实验
 
+- `UtilizationModelPlanetLabInMemoryExtended`： 根据PlanetLab数据计算容器相应CPU利用率的模型
+
 ### resources/workload/planetlab
 
 保存了PlanetLab从2011-03-03～2011-04-20的容器负载数据
 
-- `UtilizationModelPlanetLabInMemoryExtended`： 根据PlanetLab数据计算容器相应CPU利用率的模型
 
 ## 实验方法
 

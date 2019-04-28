@@ -58,30 +58,30 @@ jupyter-book文件可作为实验中的可执行文件，直接在服务器中�
 
 实验文件
 
-- /Users/zedd/OpenSource/paperlab/predict/01_bayesian_predict.ipynb：使用贝叶斯模型进行预测
-- /Users/zedd/OpenSource/paperlab/predict/02_linear_regression.ipynb：使用线性回归模型进行预测
-- /Users/zedd/OpenSource/paperlab/predict/03_cart_predict.ipynb：使用回归树模型进行预测
-- /Users/zedd/OpenSource/paperlab/predict/04_svm_predict.ipynb：使用SVM模型进行预测
-- /Users/zedd/OpenSource/paperlab/predict/05_rfr_predict.ipynb：使用随机森林模型进行预测
-- /Users/zedd/OpenSource/paperlab/predict/06_pso-svm_predict.ipynb：使用SAC-GPSO-SVM模型进行预测
-- /Users/zedd/OpenSource/paperlab/predict/data_detail.ipynb：分析实验数据（PlanetLab的容器数据）规律
-- /Users/zedd/OpenSource/paperlab/predict/grid_random_pso.ipynb：参数优化实验
-- /Users/zedd/OpenSource/paperlab/predict/time_compare.ipynb：模型理论预测时间对比
-- /Users/zedd/OpenSource/paperlab/predict/xxx_model_plot.ipynb：实验结果画图
+- /predict/01_bayesian_predict.ipynb：使用贝叶斯模型进行预测
+- /predict/02_linear_regression.ipynb：使用线性回归模型进行预测
+- /predict/03_cart_predict.ipynb：使用回归树模型进行预测
+- /predict/04_svm_predict.ipynb：使用SVM模型进行预测
+- /predict/05_rfr_predict.ipynb：使用随机森林模型进行预测
+- /predict/06_pso-svm_predict.ipynb：使用SAC-GPSO-SVM模型进行预测
+- /predict/data_detail.ipynb：分析实验数据（PlanetLab的容器数据）规律
+- /predict/grid_random_pso.ipynb：参数优化实验
+- /predict/time_compare.ipynb：模型理论预测时间对比
+- /predict/xxx_model_plot.ipynb：实验结果画图
 
 测试文件
 
-- /Users/zedd/OpenSource/paperlab/predict/cal_load_coef.ipynb：测试计算实验数据（PlanetLab）的自相关系数
-- /Users/zedd/OpenSource/paperlab/predict/construct_interval.ipynb：测试构建区间
-- /Users/zedd/OpenSource/paperlab/predict/find_period_load.ipynb：测试寻找负载数据周期性
-- /Users/zedd/OpenSource/paperlab/predict/find_smooth_load.ipynb：测试寻找负载数据平稳性和趋势性
-- /Users/zedd/OpenSource/paperlab/predict/svm_predict.ipynb：测试SVM预测方法
+- /predict/cal_load_coef.ipynb：测试计算实验数据（PlanetLab）的自相关系数
+- /predict/construct_interval.ipynb：测试构建区间
+- /predict/find_period_load.ipynb：测试寻找负载数据周期性
+- /predict/find_smooth_load.ipynb：测试寻找负载数据平稳性和趋势性
+- /predict/svm_predict.ipynb：测试SVM预测方法
 
 ### 结果文件
 
-- /Users/zedd/OpenSource/paperlab/predict/README.txt：原始数据特征分析结果
-- /Users/zedd/OpenSource/paperlab/predict/fig：实验结果示意图
-- /Users/zedd/OpenSource/paperlab/predict/fig_out：实验结果示意图（word级别）
+- /predict/README.txt：原始数据特征分析结果
+- /predict/fig：实验结果示意图
+- /predict/fig_out：实验结果示意图（word级别）
 
 # ccsim
 

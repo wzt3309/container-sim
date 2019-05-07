@@ -21,7 +21,7 @@
 %\usetheme{Ilmenau}
 %\usetheme{JuanLesPins}
 %\usetheme{Luebeck}
-%\usetheme{Madrid}
+\usetheme{Madrid}
 %\usetheme{Malmoe}
 %\usetheme{Marburg}
 %\usetheme{Montpellier}
@@ -30,7 +30,7 @@
 %\usetheme{Rochester}
 %\usetheme{Singapore}
 %\usetheme{Szeged}
-\usetheme{Warsaw}
+%\usetheme{Warsaw}
 
 % As well as themes, the Beamer class has a number of color themes
 % for any slide theme. Uncomment each of these in turn to see how it
@@ -61,9 +61,12 @@
 
 %\usefonttheme{serif}
 
-\newcommand*\oldmacro{}%
-\let\oldmacro\insertshorttitle%
-\renewcommand*\insertshorttitle{%
-  \oldmacro\hfill%
-  \insertframenumber\,/\,\inserttotalframenumber}
+%\newcommand*\oldmacro{}%
+%\let\oldmacro\insertshorttitle%
+%\renewcommand*\insertshorttitle{%
+  %\oldmacro\hfill%
+  %\insertframenumber\,/\,\inserttotalframenumber}
+
+\setbeamertemplate{caption}[numbered]
+\setbeamercolor{caption name}{fg=structure!70!black}
 }

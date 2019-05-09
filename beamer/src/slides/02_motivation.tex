@@ -58,10 +58,10 @@
 \end{itemize}
 \end{block}
 
-\vspace*{-0.7cm}
+\vspace*{0.001cm}
 \visible<1>{
 \begin{columns}
-\begin{column}{0.6\textwidth}
+\begin{column}{0.5\textwidth}
     \centering
     \begin{table}[hftb]
     \centering
@@ -85,19 +85,20 @@
     \caption{单值预测模型}
     \end{table}
 \end{column}
-\begin{column}{0.3\textwidth}
+\begin{column}{0.4\textwidth}
 \centering
 \begin{figure}[htb]
-\includegraphics[scale=0.4]{figures/fig4_single_model.jpg}
+\includegraphics[scale=0.43]{figures/fig4_single_model.jpg}
 \caption{单值预测模型}
+\label{fig:fig4}
 \end{figure}
 \end{column}
 \end{columns}
 }
-\vspace*{-4.54cm}
+\vspace*{-4.3cm}
 \visible<2>{
 \begin{columns}
-\begin{column}{0.6\textwidth}
+\begin{column}{0.5\textwidth}
     \begin{table}[hftb]
     \centering
     \resizebox{\textwidth}{!}{%
@@ -117,7 +118,13 @@
     \caption{区间预测模型}
     \end{table}
 \end{column}
-\begin{column}{0.3\textwidth}
+\begin{column}{0.4\textwidth}
+\centering
+\begin{figure}[htb]
+\includegraphics[scale=0.5]{figures/fig5_interval_model.jpg}
+\caption{区间预测模型}
+\label{fig:fig5}
+\end{figure}
 \end{column}
 \end{columns}
 }
@@ -128,4 +135,28 @@
 \begin{frame}
 \frametitle{研究动机}
 \framesubtitle{容器调度}
+\begin{itemize}
+    \item<1> 任务调度：任务分配 $\Rightarrow$ 缩短任务时间和降低能耗
+    \item<2> 虚拟机调度：迁移、放置 $\Rightarrow$ 保证QoS和降低能耗
+\end{itemize}
+\only<1>{
+\begin{block}{容器调度 VS 任务调度}
+\begin{itemize}
+    \item 生命周期
+    \item 状态管理
+    \item 动态调整
+\end{itemize}
+\end{block}
+}
+\only<2>{
+\begin{block}{容器调度 VS 虚拟机调度}
+\begin{itemize}
+    \item 资源隔离
+    \item 迁移开销与延迟
+    \item 调度粒度
+    \item 依赖距离
+\end{itemize}
+\end{block}
+\bigskip
+}
 \end{frame}

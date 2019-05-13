@@ -112,7 +112,7 @@
     \right.
     \end{equation}
 \end{block}
-\begin{block}{频谱特征}
+\begin{block}{频谱特征：如图\ref{fig:fig9}所示}
 \begin{itemize}
     \item 单个频谱特征
     \begin{equation}
@@ -129,12 +129,23 @@
 
 \begin{frame}
 \frametitle{趋势感知}
+\framesubtitle{SAC - 频谱特征分析}
+\begin{figure}[htb]
+\centering
+\includegraphics[scale=0.7]{figures/fig9_dft.pdf}
+\caption{基于傅立叶变换的频谱特征分析原理示意图}
+\label{fig:fig9}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{趋势感知}
 \framesubtitle{SAC - 自相关系数分析}
 \begin{enumerate}[1]
     \item 按滞后期$k$，将原时序序列S拆分为两个新序列：$S_{before}$ 和 $S_{after}$
     \begin{itemize}
         \item 前置序列：$s_{before} = \{load_1,load_2,\cdots,load_{n-k}\}=\{load_i\}|^{n-k}_{i=1}$
-        \item 前置序列：$s_{before} = \{load_{1+k},load_{2+k},\cdots,load_{n}\}=\{load_i\}|^{n}_{i=1+k}$
+        \item 后置序列：$s_{after} = \{load_{1+k},load_{2+k},\cdots,load_{n}\}=\{load_i\}|^{n}_{i=1+k}$
     \end{itemize}
     \item 计算滞后期为$k$时的自相关系数：$\bar{S} = \sum_{i=1}^{n} \frac{load_i}{n}$
     \begin{equation}
@@ -197,15 +208,204 @@
 
 \begin{frame}
 \frametitle{区间构造}
+\framesubtitle{平稳型}
+\begin{itemize}
+    \item \textbf{区间构造算法 - 平稳型负载}
+\end{itemize}
+%\begin{block}{平稳型负载}
+\begin{algorithmic}[1]
+  \Require{$S$, $Type$, $Period$}
+  \Ensure{$S_u$, $S_l$}
+    \State $S_{max} =$ max($S$), $S_{min} =$ min($S$), $S_{len} =$ length($S$)
+    \If{$Type ==$ \textbf{TYPE\_SMOOTH}}
+      \For{$i=1$, $i \leq S_{len}$; $i$++}
+        \State $S_u$.add($0.5*(S_i + S_{max})$) \Comment{构建上界}
+        \State $S_l$.add($0.5*(S_i + S_{min})$) \Comment{构建下界}
+      \EndFor
+    \EndIf \\
+    \Return $S_u$, $S_l$
+\end{algorithmic}
+%\end{block}
 \end{frame}
 
+\begin{frame}[allowframebreaks]
+\frametitle{区间构造}
+\framesubtitle{趋势型}
+\begin{itemize}
+    \item \textbf{区间构造算法 - 趋势型负载}
+\end{itemize}
+\begin{algorithmic}[1]
+\Require{$S$, $Type$, $Period$}
+\Ensure{$S_u$, $S_l$}
+  \State $S_{max} =$ max($S$), $S_{min} =$ min($S$), $S_{len} =$ length($S$)
+  \If{$Type ==$ \textbf{TYPE\_TENDENCY}}
+    \For{$i=1$; $i \leq S_{len}$; $i$++} \Comment{差分项均值 $\Rightarrow$ 活动空间}
+      \State $interval$.add(abs($S_{i+1} - S_i$))
+    \State $interval\_avg =$ average($interval$)
+    \EndFor
+    \framebreak
+    \For{$i=1$; $i \leq S_{len}$; $i$++} \Comment{增长趋势 $\Rightarrow$ 构建区间}
+      \If{$tendency ==$ \textbf{UP}}
+        \State $S_u$.add($S_i + interval\_avg + (S_{max} - S_i)/(S_{len} - i)$)
+        \State $S_l$.add($S_i - interval\_avg$)
+      \EndIf
+      \If{$tendency ==$ \textbf{LOW}} \Comment{下降趋势 $\Rightarrow$ 构建区间}
+        \State $S_u$.add($S_i + interval\_avg $)
+        \State $S_l$.add($S_i - interval\_avg - (S_i - S_{min})/(S_{len} - i)$)
+      \EndIf
+    \EndFor
+  \EndIf \\
+  \Return $S_u$, $S_l$
+\end{algorithmic}
+\bigskip
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+\frametitle{区间构造}
+\framesubtitle{周期型}
+\begin{itemize}
+    \item \textbf{区间构造算法 - 周期型负载}
+\end{itemize}
+\begin{algorithmic}[1]
+  \Require{$S$, $Type$, $Period$}
+  \Ensure{$S_u$, $S_l$}
+    \State $S_{max} =$ max($S$), $S_{min} =$ min($S$), $S_{len} =$ length($S$)
+    \If{$Type ==$ \textbf{TYPE\_PERIOD}}
+      \For{$i=1$; $i \leq S_{len}$; $i$++} \\
+        \Comment{周期前段️ $\Rightarrow$ 活动空间}
+        \If{$i \leq $ int($Period/2$) $+1$}
+          \For{$j=1$; $j \leq (Period - 1)$; $j$++}
+            \State $interval$.add(abs($S_{j+1}-S_j$))
+            \State $interval\_avg =$ average($interval$)
+          \EndFor
+        \EndIf
+        \framebreak \\
+        \Comment{周期中段️ $\Rightarrow$ 活动空间}
+        \If{int($Period/2$) $+ 1 < i < S_{len} - ($int($Period/2$)$-1)$}
+          \For{$j=i-$ int($Period/2$); $j \leq i+$ int($Period/2$) $-1$; $j$++}
+            \State $interval$.add(abs($S_{j+1}-S{j}$))
+            \State $interval\_avg =$ average($interval$)
+          \EndFor
+        \EndIf \\
+        \Comment{周期后段️ $\Rightarrow$ 活动空间}
+        \If{$i \geq S_{len} - $ (int($Period/2$) $-1$)}
+          \For{$i=S_{len} - Period$; $j \leq S_{len} - 1$; $j$++}
+                    \State $interval$.add(abs($S_{j+1}-S{j}$))
+                    \State $interval\_avg =$ average($interval$)
+                  \EndFor
+        \EndIf \\
+        \framebreak
+        \State $S_u$.add($S_i + interval\_avg$) \Comment{构建上界}
+        \State $S_i$.add($S_i - interval\_avg$) \Comment{构建下界}
+      \EndFor
+    \EndIf \\
+    \Return $S_u$, $S_l$
+\end{algorithmic}
+\end{frame}
 
 \subsection{区间预测}
 
-\begin{frame}
+\begin{frame}[allowframebreaks]
 \frametitle{区间预测}
+\framesubtitle{超参数优化}
+\begin{itemize}
+    \item 用带梯度信息的粒子群算法来优化SVM模型：\textbf{GPSO-SVM}
+\end{itemize}
+\begin{algorithmic}[1]
+  \Require{$S^u_{train}$, $S^l_{train}$}
+  \Ensure{$C^u_{gbest}$, $\gamma^u_{gbest}$, $C^l_{gbest}$, $\gamma^l_{gbest}$}
+  \State init($particles_{max}$, $iterator_{max}$, $position$, $velocity$)
+  \State $trainBag_u$, $testBag_u$ = fold($S^u_{train}$, $5$)
+  \State $trainBag_l$, $testBag_l$ = fold($S^l_{train}$, $5$)
+  \For{$i=1$; $i \leq iterator_{max}$; $i$++}
+    \\
+    \Comment{计算粒子\textbf{适应度}与\textbf{梯度信息}}
+	\State $C^u$, $\gamma^u$, $C^l$, $\gamma^l$ = PSO(SVM($trainBag_u$, $testBag_u$, $trainBag_l$, $testBag_l$))
+	\\
+	\Comment{适应度函数 - \alert{\textbf{CWC}}}
+	\State $fitness$ = CWC($C^u$, $\gamma^u$, $C^l$, $\gamma^l$, $trainBag_u$, $testBag_u$, $trainBag_l$, $testBag_l$)
+	\\
+	\Comment{梯度信息 - \textbf{粒子向最优运动的方向\ \ \ \ \ \ \ }}
+	\State $G$ = gradient()
+	\framebreak
+	\If{$fitness < fitness_{lbest}$} \Comment{更新\textbf{局部最优}}
+		\State $fitness_{lbest}$ = $fitness$
+		\State $C^u_{lbest}$, $\gamma^u_{lbest}$, $C^l_{lbest}$, $\gamma^l_{lbest}$ = $C^u$, $\gamma^u$, $C^l$, $\gamma^l$
+	\EndIf
+	\If{$fitness_{lbest} < fitness_{gbest}$} \Comment{更新\textbf{全局最优}}
+		\State $fitness_{gbest}$ = $fitness_{lbest}$
+		\State $C^u_{gbest}$, $\gamma^u_{gbest}$, $C^l_{gbest}$, $\gamma^l_{gbest}$ = $C^u_{lbest}$, $\gamma^u_{lbest}$, $C^l_{lbest}$, $\gamma^l_{lbest}$
+	\EndIf
+	\State $position$, $velocity$ = update($position$, $velocity$)
+  \EndFor \\
+  \Return $C^u_{gbest}$, $\gamma^u_{gbest}$, $C^l_{gbest}$, $\gamma^l_{gbest}$
+\end{algorithmic}
 \end{frame}
 
+\begin{frame}
+\frametitle{区间预测}
+\framesubtitle{CWC标准}
+\begin{itemize}
+    \item<1-> 区间覆盖度标准（Coverage Width Criterion, CWC）
+    \begin{itemize}
+        \item<1> \scriptsize{预测区间覆盖率(Prediction Interval Coverage Probability, PICP)}
+        \begin{equation}
+        \begin{aligned}
+            PICP &= \frac{1}{N} \sum_{i=1}^{N} C_i \\
+            \text{where } C_i &=
+                \left\{
+                    \begin{array}{rcl}
+                    1 \ t_i \in [L_i,U_i] \\
+                    0 \ t_i \notin [L_i,U_i]
+                    \end{array}
+                \right.
+        \end{aligned}
+        \end{equation}
+        \item<1> \scriptsize{预测区间归一化平均宽度(Prediction Interval Normalized Average Width, PINAW)}
+        \begin{equation}
+            PINEW = \frac{1}{rN} \sum_{i=1}^{N} (U_i - L_i)
+        \end{equation}
+    \end{itemize}
+    \visible<2>{
+    \begin{equation}
+        \begin{aligned}
+            CWC &= PINAW * (1 + \gamma e^{\eta(PICP-\mu)}) \\
+            \text{where } \gamma &=
+                            \left\{
+                                \begin{array}{rcl}
+                                0 \ PICP \geq \mu \\
+                                1 \ PICP < \mu
+                                \end{array}
+                            \right.
+        \end{aligned}
+    \end{equation}}
+\end{itemize}
+\bigskip
+\end{frame}
+
+
+\begin{frame}
+\frametitle{区间预测}
+\framesubtitle{训练与预测}
+\begin{itemize}
+    \item 基于最优参数SVM模型：$C^u_{gbest}$, $\gamma^u_{gbest}$, $C^l_{gbest}$, $\gamma^l_{gbest}$
+\end{itemize}
+\begin{algorithmic}[1]
+\Require{$C^u_{gbest}$, $\gamma^u_{gbest}$, $C^l_{gbest}$, $\gamma^l_{gbest}$, $S^u_{train}$, $S^l_{train}$, $S^u_{test}$, $S^l_{test}$}
+\Ensure{$P^u$, $P^l$}
+    \\
+    \Comment{基于最优超参数的\textbf{上界模型}}
+    \State $svm_u$ = SVM($kernel$=\textbf{RBF}, $C$=$C^u_{gbest}$, $\gamma$=$\gamma^u_{gbest}$)
+    \State $model_u =$ $svm_u$.fit($S^u_{train}$) \Comment{训练模型}
+    \State $P^u =$ $model_u$.predict($S^u_{test}$.Time) \Comment{预测上界}
+    \\
+    \Comment{基于最优超参数的\textbf{下界模型}}
+    \State $svm_l$ = SVM($kernel$=\textbf{RBF}, $C$=$C^l_{gbest}$, $\gamma$=$\gamma^l_{gbest}$)
+    \State $model_l =$ $svm_l$.fit($S^l_{train}$) \Comment{训练模型}
+    \State $P^l =$ $model_l$.predict($S^l_{test}$.Time) \Comment{预测下界}\\
+    \Return{$P^u$, $P^l$}
+\end{algorithmic}
+\end{frame}
 
 \subsection{实验结果与分析}
 

@@ -411,4 +411,196 @@
 
 \begin{frame}
 \frametitle{实验结果与分析}
+\framesubtitle{预测效果分析}
+\begin{itemize}
+    \item SAC-GPSO-SVM模型预测效果：数据来源(PlanetLab)\footnote{\tiny{2011.03.03-2011.04.20内11746个容器当日每5分钟内CPU利用率均值数据}}
+\end{itemize}
+\begin{minipage}{\textwidth}
+    \centering
+    \begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/fig10_data_of_sm_tr_pe.png}
+    \caption{平稳型、趋势型和周期型容器24h/5min的负载数据}
+    \label{fig:fig10}
+    \end{figure}
+\end{minipage}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.3\textwidth}
+    \begin{minipage}{\textwidth}
+        \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/fig11_a_sm_predict.png}
+        \caption{sm.1预测结果}
+        \label{fig:fig11_a}
+        \end{figure}
+    \end{minipage}
+\end{column}
+\begin{column}{0.3\textwidth}
+    \begin{minipage}{\textwidth}
+        \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/fig11_b_tr_predict.png}
+        \caption{tr.1预测结果}
+        \label{fig:fig11_b}
+        \end{figure}
+    \end{minipage}
+\end{column}
+\begin{column}{0.3\textwidth}
+    \begin{minipage}{\textwidth}
+        \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/fig11_c_pe_predict.png}
+        \caption{pe.1预测结果}
+        \label{fig:fig11_c}
+        \end{figure}
+    \end{minipage}
+\end{column}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{实验结果与分析}
+\framesubtitle{预测效果分析}
+\begin{block}{对比算法}
+    \begin{itemize}
+        \item Native Bayes，Linear Regression，SVM，CART和RFR
+    \end{itemize}
+\end{block}
+\begin{itemize}
+    \item Native Bayes
+\end{itemize}
+\begin{minipage}{\textwidth}
+    \centering
+    \begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/fig12_a_bayesian.png}
+    \caption{Native Bayes预测结果}
+    \label{fig:fig12_a}
+    \end{figure}
+\end{minipage}
+\end{frame}
+
+\begin{frame}
+\frametitle{实验结果与分析}
+\framesubtitle{预测效果分析}
+\begin{itemize}
+    \item Linear Regression和SVM
+\end{itemize}
+\begin{minipage}{\textwidth}
+    \centering
+    \begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/fig12_b_linear.png}
+    \caption{Linear Regression预测结果}
+    \label{fig:fig12_b}
+    \end{figure}
+\end{minipage}
+\begin{minipage}{\textwidth}
+    \centering
+    \begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/fig12_c_svm.png}
+    \caption{SVM预测结果}
+    \label{fig:fig12_c}
+    \end{figure}
+\end{minipage}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{实验结果与分析}
+\framesubtitle{预测效果分析}
+\begin{itemize}
+    \item CART和RFR
+\end{itemize}
+\begin{minipage}{\textwidth}
+    \centering
+    \begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/fig12_d_cart.png}
+    \caption{CART预测结果}
+    \label{fig:fig12_d}
+    \end{figure}
+\end{minipage}
+\begin{minipage}{\textwidth}
+    \centering
+    \begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/fig12_e_rfr.png}
+    \caption{RFR预测结果}
+    \label{fig:fig12_e}
+    \end{figure}
+\end{minipage}
+\end{frame}
+
+\begin{frame}
+\frametitle{实验结果与分析}
+\framesubtitle{预测准确性对比}
+\begin{itemize}
+    \item {\color{red}红色：最优}
+    \item {\color{yellow}黄色：优}
+    \item {\color{blue}蓝色：次优}
+\end{itemize}
+\begin{table}[hftb]
+    \centering
+    \resizebox{\textwidth}{!}{%
+        \begin{tabular}{cccc}
+            \toprule
+            \textbf{模型} & \textbf{CWC(\%) $\Downarrow$} & \textbf{PICP(\%) $\Uparrow$} & \textbf{PINEW(\%) $\Downarrow$}\\
+            \midrule
+            Native Bayes & {\color{blue}71.95} & {\color{yellow}89.41} & {\color{blue}37.41} \\
+            Linear Regression & 114 & 83.53 & 40.88 \\
+            SVM & 96.92 & 88.24 & 44.19 \\
+            CART & 94.16 & 84.31 & {\color{red}34.39} \\
+            RFR & {\color{yellow}68.56} & {\color{red}89.42} & 43.55 \\
+            SAC-GPSO-SVM & {\color{red}61.26} & {\color{blue}89.40} & {\color{yellow}35.15} \\
+            \bottomrule
+        \end{tabular}
+    }
+    \caption{预测准确性对比}
+    \label{tab:tab3}
+\end{table}
+\end{frame}
+
+\begin{frame}
+\frametitle{实验结果与分析}
+\framesubtitle{预测效率分析}
+\begin{itemize}
+    \item 剔除超参数优化时间，只考虑模型平均预测时间
+\end{itemize}
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/fig13_time_zh.png}
+    \caption{各模型平均预测时间对比}
+    \label{fig:fig13}
+\end{figure}
+\bigskip
+\end{frame}
+
+\begin{frame}
+\frametitle{实验结果与分析}
+\framesubtitle{参数优化效率与模型实时性检验}
+\begin{itemize}
+    \item {\color{red}红色：最优}
+    \item {\color{yellow}黄色：优}
+    \item {\color{blue}蓝色：次优}
+\end{itemize}
+\begin{table}[hftb]
+    \centering
+    \resizebox{\textwidth}{!}{%
+        \begin{tabular}{cccc}
+            \toprule
+            \textbf{优化方法} & \textbf{平均最优CWC(\%)} & \textbf{平均迭代次数} & \textbf{平均预测时间(s)}\\
+            \midrule
+            GridSearchCV & {\color{red}68.24} & 1358 & 465.21 \\
+            RandomizedSearchCV & {\color{blue}68.56} & {\color{blue}103} & {\color{blue}122.47} \\
+            PSO & 68.64 & {\color{yellow}87} & {\color{yellow}78.53} \\
+            GPSO & {\color{yellow}68.45} & {\color{red}30} & {\color{red}23.34} \\
+            \bottomrule
+        \end{tabular}
+    }
+    \caption{预测准确性对比}
+    \label{tab:tab4}
+\end{table}
 \end{frame}

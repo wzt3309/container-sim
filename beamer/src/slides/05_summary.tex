@@ -3,4 +3,27 @@
 
 \begin{frame}
 \frametitle{总结与展望}
+\begin{block}{总结}
+\begin{itemize}
+    \item 基于趋势感知的区间预测模型：SAC-GPSO-SVM
+    \begin{itemize}
+        \item {\color{gray}单值预测模型 $\Rightarrow$ \textbf{误差敏感，鲁棒性不足}}
+        \item {\color{gray}传统区间预测模型 $\Rightarrow$ \textbf{先验假设，不考虑负载类型异构}}
+        \item 负载趋势感知（SAC） $\Rightarrow$ \textbf{平稳型、趋势型和周期型}
+        \item 针对类型构造训练区间 $\Rightarrow$ \textbf{SVM预测}（\sout{依赖分布假设}）
+        \item GPSO优化模型超参数 $\Rightarrow$ \textbf{实时性、准确性要求}
+    \end{itemize}
+    \item 基于动态伸缩的容器调度策略：DSCS
+    \begin{itemize}
+        \item 动态调整容器副本数量 $\Rightarrow$ \textbf{提升资源利用率，保证服务质量}
+        \item 基于负载相关性容器和主机选择算法 $\Rightarrow$ \textbf{减少空闲主机，优化能耗}
+    \end{itemize}
+\end{itemize}
+\end{block}
+\begin{exampleblock}{展望}
+    \begin{itemize}
+        \item 容器接入雾计算和边缘计算：任务跨平台可移植性
+        \item 容器调度系统复杂性和异构性：负载预测、资源配置和节能调度
+    \end{itemize}
+\end{exampleblock}
 \end{frame}

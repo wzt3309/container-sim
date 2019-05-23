@@ -29,8 +29,8 @@
 \includegraphics[scale=0.2]{figures/logo.jpg}
 }
 
-\date[June. 2019]
-{2019年6月}
+\date[May 26th, 2019]
+{2019年5月26日}
 %End of title page configuration
 %-----------------------------------------------------------
 
@@ -44,9 +44,10 @@
 {
   \begin{frame}
     \frametitle{目录}
-    \begin{multicols}{2}
-    \tableofcontents[currentsection]
-    \end{multicols}
+    \tableofcontents[
+    currentsection,
+    sectionstyle=show/shaded,
+    subsectionstyle=show/show/hide]
   \end{frame}
 }
 %-----------------------------------------------------------
@@ -64,14 +65,18 @@
 \input{slides/02_motivation.tex}
 
 %Model
-\input{slides/03_model.tex}
+%\input{slides/03_model.tex}
 
 %Scheduler
-\input{slides/04_scheduler.tex}
+%\input{slides/04_scheduler.tex}
 
 %Summary
-\input{slides/05_summary.tex}
+%\input{slides/05_summary.tex}
 
 %Thx
-\input{slides/06_thx.tex}
+%\input{slides/06_thx.tex}
+
+\begin{frame}{参考文献}
+	\printbibliography
+\end{frame}
 \end{document}

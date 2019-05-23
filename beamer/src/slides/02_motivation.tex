@@ -1,11 +1,8 @@
 %Title of section
-\section{研究动机}
-
-\subsection{主要目标}
 
 \begin{frame}
 \frametitle{研究动机}
-\framesubtitle{主要目标}
+\framesubtitle{研究目标}
 \begin{block}{解决CaaS模式下云数据中心的能耗优化问题}
     \begin{itemize}
         \item 负载监控机制：负载与能耗紧密相关
@@ -27,7 +24,7 @@
 
 \begin{frame}
 \frametitle{研究动机}
-\framesubtitle{负载监控}
+\framesubtitle{目标1：负载监控}
 容器负载监控机制对云数据中心\textbf{\alert{资源配置和调度决策}}有较大影响
 
 \begin{block}{负载监控机制}
@@ -46,7 +43,12 @@
 
 \begin{frame}
 \frametitle{研究动机}
-\framesubtitle{负载监控}
+\framesubtitle{目标1：负载监控 $\Rightarrow$
+\onslide*<1,3>{\textbf{负载预测模型}}
+\onslide*<2,4>{负载预测模型}
+\onslide*<2>{$\Rightarrow$ \textbf{单值预测模型}}
+\onslide*<4>{$\Rightarrow$ \textbf{区间预测模型}}}
+\onslide*<1,3>{
 \begin{block}{负载预测模型}
 \begin{itemize}
     \item<1-1> 单值预测模型：预测特定值
@@ -54,55 +56,39 @@
         \item<1-1> \textbf{误差敏感} $\Rightarrow$ \textbf{决策失效}
         \item<1-1> \textbf{鲁棒性差} $\Rightarrow$ \textbf{决策过度}
     \end{itemize}
-    \item<2-2> 区间预测模型\textsuperscript{$\star$}：预测取值区间（置信度$\alpha=0.9$）
+    \item<3-3> 区间预测模型\textsuperscript{$\star$}：预测取值区间（置信度$\alpha=0.9$）
 \end{itemize}
 \end{block}
-
-\vspace*{0.001cm}
-\visible<1>{
-\begin{columns}
-\begin{column}{0.5\textwidth}
-    \centering
-    \begin{table}[hftb]
-    \centering
-    \resizebox{\textwidth}{!}{%
-        \begin{tabular}{ccl}
-            \toprule
-            \textbf{类型} & \textbf{模型名称} & \textbf{简述}\\
-            \midrule
-            \multirow{4}{*}{统计学模型} & ARIMA & 差分自回归移动平均\\
-            ~ & Kalman滤波 & 基于递推演进和观测值对预测结果进行演进\\
-            ~ & 排队论模型 & 基于在线作业请求和系统阻塞情况进行预测\\
-            ~ & 灰色模型 & 模型新陈代谢过程，进行中长期预测\\
-            \midrule
-            \multirow{4}{*}{机器学习模型} & RNN & 递归神经网络预测\\
-            ~ & BPNN & 原始信息前向传播，误差信息后向传播\\
-            ~ & LSTM & 长短期记忆网络\\
-            ~ & 混合模型 & 基于c-means聚类和模糊(Fuzzy)神经网络\\
-            \bottomrule
-        \end{tabular}
-    }
-    \caption{单值预测模型}
-    \label{tab:tab1}
-    \end{table}
-\end{column}
-\begin{column}{0.4\textwidth}
-\centering
-\begin{figure}[htb]
-\includegraphics[scale=0.43]{figures/fig4_single_model.jpg}
-\caption{单值预测模型}
-\label{fig:fig4}
-\end{figure}
-\end{column}
-\end{columns}
 }
-\vspace*{-4.3cm}
-\visible<2>{
-\begin{columns}
-\begin{column}{0.5\textwidth}
-    \begin{table}[hftb]
+\onslide*<1>{
+\begin{table}[hftb]
+\centering
+\resizebox{0.7\textwidth}{!}{%
+    \begin{tabular}{ccl}
+        \toprule
+        \textbf{类型} & \textbf{模型名称} & \textbf{简述}\\
+        \midrule
+        \multirow{4}{*}{统计学模型} & ARIMA & 差分自回归移动平均\\
+        ~ & Kalman滤波 & 基于递推演进和观测值对预测结果进行演进\\
+        ~ & 排队论模型 & 基于在线作业请求和系统阻塞情况进行预测\\
+        ~ & 灰色模型 & 模型新陈代谢过程，进行中长期预测\\
+        \midrule
+        \multirow{4}{*}{机器学习模型} & RNN & 递归神经网络预测\\
+        ~ & BPNN & 原始信息前向传播，误差信息后向传播\\
+        ~ & LSTM & 长短期记忆网络\\
+        ~ & 混合模型 & 基于c-means聚类和模糊(Fuzzy)神经网络\\
+        \bottomrule
+    \end{tabular}
+}
+\caption{单值预测模型}
+\label{tab:tab1}
+\end{table}
+}
+
+\onslide*<3>{
+\begin{table}[hftb]
     \centering
-    \resizebox{\textwidth}{!}{%
+    \resizebox{0.7\textwidth}{!}{%
         \begin{tabular}{ccl}
             \toprule
             \textbf{类型} & \textbf{模型名称} & \textbf{简述}\\
@@ -119,16 +105,22 @@
     \caption{区间预测模型}
     \label{tab:tab2}
     \end{table}
-\end{column}
-\begin{column}{0.4\textwidth}
-\centering
+}
+
+\onslide*<2>{
 \begin{figure}[htb]
-\includegraphics[scale=0.5]{figures/fig5_interval_model.jpg}
+\includegraphics[scale=0.87]{figures/fig4_single_model.jpg}
+\caption{单值预测模型}
+\label{fig:fig4}
+\end{figure}
+}
+
+\onslide*<4>{
+\begin{figure}[htb]
+\includegraphics[scale=0.87]{figures/fig5_interval_model.jpg}
 \caption{区间预测模型}
 \label{fig:fig5}
 \end{figure}
-\end{column}
-\end{columns}
 }
 \end{frame}
 
@@ -136,7 +128,7 @@
 
 \begin{frame}
 \frametitle{研究动机}
-\framesubtitle{容器调度}
+\framesubtitle{目标2：容器调度}
 \begin{itemize}
     \item<1> 任务调度：任务分配 $\Rightarrow$ 缩短任务时间和降低能耗
     \item<2> 虚拟机调度：迁移、放置 $\Rightarrow$ 保证QoS和降低能耗

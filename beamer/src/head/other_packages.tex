@@ -17,3 +17,7 @@
 %\usepackage[linesnumbered,ruled]{algorithm2e} % Allows algorithm
 \usepackage{algpseudocode}
 %\renewcommand{\algorithmcfname}{算法} % Change 'Algorithm x' to '算法 x'
+
+\usepackage[backend=bibtex,sorting=none]{biblatex}
+\addbibresource{bib/reference.bib}
+\newcommand{\upcite}[1]{\textsuperscript{\textsuperscript{\cite{#1}}}}

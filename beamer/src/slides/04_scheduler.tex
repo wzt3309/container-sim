@@ -1,5 +1,5 @@
 %Title of section
-\section{基于动态伸缩容器调度策略}
+\section{基于动态伸缩的容器调度策略}
 
 \subsection{系统结构}
 
@@ -42,7 +42,7 @@
 \begin{itemize}
     \item 数据中心在$t$时刻的能耗$P_{dc}(t)$（\textbf{仅考虑服务器}）
     \begin{equation}
-        P_{dc}(t) = \sum_{i=1}{N_s} P_i(t)
+        P_{dc}(t) = \sum_{i=1}^{N_s} P_i(t)
     \end{equation}
     \item 服务器能耗$P_i(t)$，采用CPU能耗模型
     \begin{equation}
@@ -453,12 +453,12 @@
                 \textbf{赔偿（相对于租金比例）} & \textbf{SLA违反率（未响应时间占比）} \\
                 \midrule
                 $0$ & $0\sim5\%$   \\
-                $5$ & $5\%sim15\%$   \\
-                $10$ & $15\%sim20\%$   \\
-                $20$ & $20\%sim25\%$   \\
-                $35$ & $25\%sim30\%$   \\
-                $55$ & $30\%sim45\%$   \\
-                $80$ & $45\%sim50\%$   \\
+                $5$ & $5\%\sim15\%$   \\
+                $10$ & $15\%\sim20\%$   \\
+                $20$ & $20\%\sim25\%$   \\
+                $35$ & $25\%\sim30\%$   \\
+                $55$ & $30\%\sim45\%$   \\
+                $80$ & $45\%\sim50\%$   \\
                 $100$ & $50\%$以上   \\
                 \bottomrule
             \end{tabular}

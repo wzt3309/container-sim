@@ -4,11 +4,10 @@
 \frametitle{研究目标}
 \begin{block}{解决CaaS模式下云数据中心的能耗优化问题}
     \begin{itemize}
-        \item 负载监控机制：负载与能耗紧密相关
+        \item 负载预测模型
         \begin{itemize}
             \item 实时性
-            \item 准确性
-            \item 易扩展性
+            \item 主动资源配置和容器调度
         \end{itemize}
         \item 基于负载状态容器调度策略
         \begin{itemize}
@@ -21,43 +20,22 @@
 
 \subsection{研究目标}
 
-\subsubsection{负载监控}
+\subsubsection{容器负载预测模型}
 
 \begin{frame}
 \frametitle{研究目标}
-\framesubtitle{目标1：负载监控}
-容器负载监控机制对云数据中心\textbf{\alert{资源配置和调度决策}}有较大影响
-
-\begin{block}{负载监控机制}
-\begin{itemize}
-    \item<1-> 基于负载采集程序：负载变化频繁、异构网络环境导致滞后性
-    \item<2-> 负载预测模型：主动进行资源配置和容器调度
-\end{itemize}
-\end{block}
-\begin{figure}[htb]
-\centering
-    \includegraphics[scale=0.41]{figures/fig3_mmn.jpg}
-    \caption{基于负载采集程序的监控网络}
-    \label{fig:fig3}
-\end{figure}
-\end{frame}
-
-\begin{frame}
-\frametitle{研究目标}
-\framesubtitle{目标1：负载监控 $\Rightarrow$
-\onslide*<1,3>{\textbf{负载预测模型}}
-\onslide*<2,4>{负载预测模型}
-\onslide*<2>{$\Rightarrow$ \textbf{单值预测模型}}
-\onslide*<4>{$\Rightarrow$ \textbf{区间预测模型}}}
+\framesubtitle{目标1：容器负载预测模型
+\onslide*<1-2>{$\Rightarrow$ \textbf{单值预测模型}}
+\onslide*<3-4>{$\Rightarrow$ \textbf{区间预测模型}}}
 \onslide*<1,3>{
 \begin{block}{负载预测模型}
 \begin{itemize}
-    \item<1-1> 单值预测模型：预测特定值
+    \item<1-1> 单值预测模型：预测负载的特定值
     \begin{itemize}
         \item<1-1> \textbf{误差敏感} $\Rightarrow$ \textbf{决策失效}
         \item<1-1> \textbf{鲁棒性差} $\Rightarrow$ \textbf{决策过度}
     \end{itemize}
-    \item<3-3> 区间预测模型\textsuperscript{$\star$}：预测取值区间（置信度$\alpha=0.9$）
+    \item<3-3> 区间预测模型\textsuperscript{$\star$}：预测负载的取值区间
 \end{itemize}
 \end{block}
 }
@@ -125,33 +103,16 @@
 }
 \end{frame}
 
-\subsubsection{容器调度}
+\subsubsection{容器调度策略}
 
 \begin{frame}
 \frametitle{研究目标}
-\framesubtitle{目标2：容器调度}
+\framesubtitle{目标2：容器调度策略}
+\begin{block}{容器调度策略：保证QoS同时降低能耗}
 \begin{itemize}
-    \item<1> 任务调度：任务分配 $\Rightarrow$ 缩短任务时间和降低能耗
-    \item<2> 虚拟机调度：迁移、放置 $\Rightarrow$ 保证QoS和降低能耗
-\end{itemize}
-\only<1>{
-\begin{block}{容器调度 VS 任务调度}
-\begin{itemize}
-    \item 生命周期
-    \item 状态管理
-    \item 动态调整
+    \item 动态调整容器数量：提高资源利用率
+    \item 放置、迁移新增的和高负载主机上的容器：保证QoS
+    \item 合并低负载主机上的容器：减少虚拟机和已激活服务器数量，避免不必要的能耗
 \end{itemize}
 \end{block}
-}
-\only<2>{
-\begin{block}{容器调度 VS 虚拟机调度}
-\begin{itemize}
-    \item 资源隔离
-    \item 迁移开销与延迟
-    \item 调度粒度
-    \item 依赖距离
-\end{itemize}
-\end{block}
-\bigskip
-}
 \end{frame}

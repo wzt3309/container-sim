@@ -7,81 +7,63 @@
 \frametitle{模型结构}
 \framesubtitle{引言}
 \begin{itemize}
-    \item 单值预测模型：ARIMA、Kalman滤波、神经网络、……
+    \item 趋势感知的区间预测模型：不依赖分布假设，适用多种负载类型
     \begin{itemize}
-        \item \textbf{误差敏感} $\Rightarrow$ \textbf{决策失效}
-        \item \textbf{鲁棒性差} $\Rightarrow$ \textbf{决策过度}
-    \end{itemize}
-    \item 区间预测模型：贝叶斯、回归模型、随机森林、……
-    \begin{itemize}
-        \item \textbf{预测区间} $\Rightarrow$ \textbf{目标不确定性（包含误差）}
-        \item \textbf{区间置信度} $\Rightarrow$ \textbf{适合决策}
-        \item \alert{\textbf{先预测再扩展为区间} $\Rightarrow$ \textbf{先验假设}}
-        \item \alert{\textbf{相同分布假设} $\nRightarrow$ \textbf{适应不同类型负载}}
-    \end{itemize}
-    \item 基于趋势感知的区间预测模型：SAC-GPSO-SVM
-    \begin{itemize}
-        \item \textbf{趋势感知} $\Rightarrow$ \textbf{平稳型、趋势型和周期型负载}
-        \item \textbf{区间构造} $\Rightarrow$ \textbf{针对不同负载类型}
-        \item \textbf{区间预测} $\Rightarrow$ \textbf{先构建区间再预测}（\sout{先预测再扩展为区间}）
-        \item \textbf{实时预测} $\Rightarrow$ \textbf{预测效率}（模型训练和预测结果计算）
+        \item \textbf{趋势感知} $\Rightarrow$ 平稳型、趋势型和周期型负载
+        \item \textbf{区间构造} $\Rightarrow$ 针对不同负载类型构造训练集上/下界
+        \item \textbf{区间预测} $\Rightarrow$ GPSO优化SVM模型超参数
+        \item \textbf{实时预测} $\Rightarrow$ 模型建立后，根据系统反馈实时数据向前预测
     \end{itemize}
 \end{itemize}
+\begin{figure}[htb]
+\centering
+\includegraphics[scale=0.5]{figures/fig6_sac-gpso-svm.jpg}
+\caption{基于趋势感知的区间预测模型}
+\label{fig:fig6}
+\end{figure}
 \end{frame}
 
 \begin{frame}
 \frametitle{模型结构}
 \framesubtitle{示意图}
-\begin{columns}
-\begin{column}{0.4\textwidth}
 \begin{figure}[htb]
 \centering
-\includegraphics[scale=0.3]{figures/fig6_sac-gpso-svm.jpg}
-\caption{基于趋势感知的区间预测模型}
-\label{fig:fig6}
-\end{figure}
-\end{column}
-\begin{column}{0.6\textwidth}
-\begin{figure}[htb]
-\centering
-\includegraphics[scale=0.38]{figures/fig7_predict_process.jpg}
+\includegraphics[scale=0.45]{figures/fig7_predict_process.jpg}
 \caption{模型预测过程}
 \label{fig:fig7}
 \end{figure}
-\end{column}
-\end{columns}
 \end{frame}
 
 \subsection{趋势感知}
 
-\begin{frame}
-\frametitle{趋势感知}
-\framesubtitle{定义}
-\begin{itemize}
-    \item 容器负载：\textbf{时间段$p$内CPU利用率均值}（\sout{Load Average}）
-    \begin{equation}
-        load = avg(u(p))
-    \end{equation}
-    \item 负载时序数据
-    \begin{equation}
-        S=\{(t_1,load_1),(t_2,load_2),\cdots,(t_n,load_n)\}=\{(t_i,load_i)\}|^n_{i=1}
-    \end{equation}
-    \begin{equation}
-        load_i = avg(u(t_i - t_{i-1}))
-    \end{equation}
-    \begin{itemize}
-        \item $t_i - t_{i-1}$ \textbf{增大} $\Rightarrow$ \textbf{$load_i$ 平均特征}
-        \item $t_i - t_{i-1}$ \textbf{减小} $\Rightarrow$ \textbf{$load_i$ 瞬时特征}
-    \end{itemize}
-\end{itemize}
-\end{frame}
+%\begin{frame}
+%\frametitle{趋势感知}
+%\framesubtitle{定义}
+%\begin{itemize}
+%    \item 容器负载：\textbf{时间段$p$内CPU利用率均值}（\sout{Load Average}）
+%    \begin{equation}
+%        load = avg(u(p))
+%    \end{equation}
+%    \item 负载时序数据
+%    \begin{equation}
+%        S=\{(t_1,load_1),(t_2,load_2),\cdots,(t_n,load_n)\}=\{(t_i,load_i)\}|^n_{i=1}
+%    \end{equation}
+%    \begin{equation}
+%        load_i = avg(u(t_i - t_{i-1}))
+%    \end{equation}
+%    \begin{itemize}
+%        \item $t_i - t_{i-1}$ \textbf{增大} $\Rightarrow$ \textbf{$load_i$ 平均特征}
+%        \item $t_i - t_{i-1}$ \textbf{减小} $\Rightarrow$ \textbf{$load_i$ 瞬时特征}
+%    \end{itemize}
+%\end{itemize}
+%\end{frame}
 
 \begin{frame}
 \frametitle{趋势感知}
 \framesubtitle{SAC规则}
 \begin{itemize}
-    \item 频谱特征分析（\textbf{S}pectrum \textbf{A}nalysis）
-    和自相关系数（\textbf{A}utocorrelation \textbf{C}oefficient）分析判定规则（SAC规则）
+    \item 频谱特征分析（\textbf{S}pectrum \textbf{A}nalysis）：判定周期性
+    \item 自相关系数分析（\textbf{A}utocorrelation \textbf{C}oefficient）：判定平稳还是趋势
 \end{itemize}
 \begin{figure}[htb]
 \centering
@@ -208,99 +190,27 @@
 
 \begin{frame}
 \frametitle{区间构造}
-\framesubtitle{平稳型}
-\begin{itemize}
-    \item \textbf{区间构造算法 - 平稳型负载}
-\end{itemize}
-%\begin{block}{平稳型负载}
+\begin{block}{平稳型负载：基于序列最大最小值}
 \begin{algorithmic}[1]
-  \Require{$S$, $Type$, $Period$}
-  \Ensure{$S_u$, $S_l$}
-    \State $S_{max} =$ max($S$), $S_{min} =$ min($S$), $S_{len} =$ length($S$)
-    \If{$Type ==$ \textbf{TYPE\_SMOOTH}}
-      \For{$i=1$, $i \leq S_{len}$; $i$++}
-        \State $S_u$.add($0.5*(S_i + S_{max})$) \Comment{构建上界}
-        \State $S_l$.add($0.5*(S_i + S_{min})$) \Comment{构建下界}
-      \EndFor
-    \EndIf \\
-    \Return $S_u$, $S_l$
+    \State $S_u$.add($0.5*(S_i + S_{max})$)
+    \State $S_l$.add($0.5*(S_i + S_{min})$)
 \end{algorithmic}
-%\end{block}
-\end{frame}
-
-\begin{frame}[allowframebreaks]
-\frametitle{区间构造}
-\framesubtitle{趋势型}
-\begin{itemize}
-    \item \textbf{区间构造算法 - 趋势型负载}
-\end{itemize}
+\end{block}
+\begin{block}{趋势型负载：差分项绝对值的均值 $\Rightarrow$ 震动幅度}
 \begin{algorithmic}[1]
-\Require{$S$, $Type$, $Period$}
-\Ensure{$S_u$, $S_l$}
-  \State $S_{max} =$ max($S$), $S_{min} =$ min($S$), $S_{len} =$ length($S$)
-  \If{$Type ==$ \textbf{TYPE\_TENDENCY}}
-    \For{$i=1$; $i \leq S_{len}$; $i$++} \Comment{差分项均值 $\Rightarrow$ 活动空间}
-      \State $interval$.add(abs($S_{i+1} - S_i$))
-    \State $interval\_avg =$ average($interval$)
-    \EndFor
-    \framebreak
-    \For{$i=1$; $i \leq S_{len}$; $i$++} \Comment{增长趋势 $\Rightarrow$ 构建区间}
-      \If{$tendency ==$ \textbf{UP}}
-        \State $S_u$.add($S_i + interval\_avg + (S_{max} - S_i)/(S_{len} - i)$)
-        \State $S_l$.add($S_i - interval\_avg$)
-      \EndIf
-      \If{$tendency ==$ \textbf{LOW}} \Comment{下降趋势 $\Rightarrow$ 构建区间}
-        \State $S_u$.add($S_i + interval\_avg $)
-        \State $S_l$.add($S_i - interval\_avg - (S_i - S_{min})/(S_{len} - i)$)
-      \EndIf
-    \EndFor
-  \EndIf \\
-  \Return $S_u$, $S_l$
+    \State $interval$.add(abs($S_{i+1} - S_i$))
+    \State \textbf{$interval\_avg =$ average($interval$)}
+    \State $(S_i, S_{max}, S_{min}, interval\_avg) \Rightarrow (S_u, S_l)$
 \end{algorithmic}
-\bigskip
-\end{frame}
-
-\begin{frame}[allowframebreaks]
-\frametitle{区间构造}
-\framesubtitle{周期型}
-\begin{itemize}
-    \item \textbf{区间构造算法 - 周期型负载}
-\end{itemize}
+\end{block}
+\begin{block}{周期型负载：分三段计算震动幅度}
 \begin{algorithmic}[1]
-  \Require{$S$, $Type$, $Period$}
-  \Ensure{$S_u$, $S_l$}
-    \State $S_{max} =$ max($S$), $S_{min} =$ min($S$), $S_{len} =$ length($S$)
-    \If{$Type ==$ \textbf{TYPE\_PERIOD}}
-      \For{$i=1$; $i \leq S_{len}$; $i$++} \\
-        \Comment{周期前段️ $\Rightarrow$ 活动空间}
-        \If{$i \leq $ int($Period/2$) $+1$}
-          \For{$j=1$; $j \leq (Period - 1)$; $j$++}
-            \State $interval$.add(abs($S_{j+1}-S_j$))
-            \State $interval\_avg =$ average($interval$)
-          \EndFor
-        \EndIf
-        \framebreak \\
-        \Comment{周期中段️ $\Rightarrow$ 活动空间}
-        \If{int($Period/2$) $+ 1 < i < S_{len} - ($int($Period/2$)$-1)$}
-          \For{$j=i-$ int($Period/2$); $j \leq i+$ int($Period/2$) $-1$; $j$++}
-            \State $interval$.add(abs($S_{j+1}-S{j}$))
-            \State $interval\_avg =$ average($interval$)
-          \EndFor
-        \EndIf \\
-        \Comment{周期后段️ $\Rightarrow$ 活动空间}
-        \If{$i \geq S_{len} - $ (int($Period/2$) $-1$)}
-          \For{$i=S_{len} - Period$; $j \leq S_{len} - 1$; $j$++}
-                    \State $interval$.add(abs($S_{j+1}-S{j}$))
-                    \State $interval\_avg =$ average($interval$)
-                  \EndFor
-        \EndIf \\
-        \framebreak
-        \State $S_u$.add($S_i + interval\_avg$) \Comment{构建上界}
-        \State $S_i$.add($S_i - interval\_avg$) \Comment{构建下界}
-      \EndFor
-    \EndIf \\
-    \Return $S_u$, $S_l$
+    \State $i \in [1, \frac{Period}{2})$
+    \State $i \in [\frac{Period}{2}, S_{len} - \frac{Period}{2})$
+    \State $i \in [S_{len} - \frac{Period}{2}, S_{len}]$
+    \State $(S_i, S_{max}, S_{min}, interval\_avg^{*}) \Rightarrow (S_u, S_l)$
 \end{algorithmic}
+\end{block}
 \end{frame}
 
 \subsection{区间预测}
@@ -309,80 +219,26 @@
 \frametitle{区间预测}
 \framesubtitle{超参数优化}
 \begin{itemize}
-    \item 用带梯度信息的粒子群算法来优化SVM模型：\textbf{GPSO-SVM}
+    \item GPSO来优化SVM超参数：$C^u_{gbest}$, $\gamma^u_{gbest}$, $C^l_{gbest}$, $\gamma^l_{gbest}$
+    \item GPSO的适应度函数：区间覆盖度标准（CWC）\upcite{shrivastava_prediction_2015}
+        \begin{itemize}
+            \item 区间覆盖率(PICP)：真值落在预测区间内的百分比
+            \item 区间归一化宽度(PINAW)
+        \end{itemize}
+       \begin{equation}
+                   \begin{aligned}
+                       CWC &= PINAW * (1 + \gamma e^{\eta(PICP-\mu)}) \\
+                       \text{where} \gamma &=
+                                       \left\{
+                                           \begin{array}{rcl}
+                                           0 \ PICP \geq \mu \\
+                                           1 \ PICP < \mu
+                                           \end{array}
+                                       \right.
+                   \end{aligned}
+               \end{equation}
 \end{itemize}
-\begin{algorithmic}[1]
-  \Require{$S^u_{train}$, $S^l_{train}$}
-  \Ensure{$C^u_{gbest}$, $\gamma^u_{gbest}$, $C^l_{gbest}$, $\gamma^l_{gbest}$}
-  \State init($particles_{max}$, $iterator_{max}$, $position$, $velocity$)
-  \State $trainBag_u$, $testBag_u$ = fold($S^u_{train}$, $5$)
-  \State $trainBag_l$, $testBag_l$ = fold($S^l_{train}$, $5$)
-  \For{$i=1$; $i \leq iterator_{max}$; $i$++}
-    \\
-    \Comment{计算粒子\textbf{适应度}与\textbf{梯度信息}}
-	\State $C^u$, $\gamma^u$, $C^l$, $\gamma^l$ = PSO(SVM($trainBag_u$, $testBag_u$, $trainBag_l$, $testBag_l$))
-	\\
-	\Comment{适应度函数 - \alert{\textbf{CWC}}}
-	\State $fitness$ = CWC($C^u$, $\gamma^u$, $C^l$, $\gamma^l$, $trainBag_u$, $testBag_u$, $trainBag_l$, $testBag_l$)
-	\\
-	\Comment{梯度信息 - \textbf{粒子向最优运动的方向\ \ \ \ \ \ \ }}
-	\State $G$ = gradient()
-	\framebreak
-	\If{$fitness < fitness_{lbest}$} \Comment{更新\textbf{局部最优}}
-		\State $fitness_{lbest}$ = $fitness$
-		\State $C^u_{lbest}$, $\gamma^u_{lbest}$, $C^l_{lbest}$, $\gamma^l_{lbest}$ = $C^u$, $\gamma^u$, $C^l$, $\gamma^l$
-	\EndIf
-	\If{$fitness_{lbest} < fitness_{gbest}$} \Comment{更新\textbf{全局最优}}
-		\State $fitness_{gbest}$ = $fitness_{lbest}$
-		\State $C^u_{gbest}$, $\gamma^u_{gbest}$, $C^l_{gbest}$, $\gamma^l_{gbest}$ = $C^u_{lbest}$, $\gamma^u_{lbest}$, $C^l_{lbest}$, $\gamma^l_{lbest}$
-	\EndIf
-	\State $position$, $velocity$ = update($position$, $velocity$)
-  \EndFor \\
-  \Return $C^u_{gbest}$, $\gamma^u_{gbest}$, $C^l_{gbest}$, $\gamma^l_{gbest}$
-\end{algorithmic}
 \end{frame}
-
-\begin{frame}
-\frametitle{区间预测}
-\framesubtitle{CWC标准}
-\begin{itemize}
-    \item<1-> 区间覆盖度标准（Coverage Width Criterion, CWC）\upcite{shrivastava_prediction_2015}
-    \begin{itemize}
-        \item<1> \scriptsize{预测区间覆盖率(Prediction Interval Coverage Probability, PICP)}
-        \begin{equation}
-        \begin{aligned}
-            PICP &= \frac{1}{N} \sum_{i=1}^{N} C_i \\
-            \text{where } C_i &=
-                \left\{
-                    \begin{array}{rcl}
-                    1 \ t_i \in [L_i,U_i] \\
-                    0 \ t_i \notin [L_i,U_i]
-                    \end{array}
-                \right.
-        \end{aligned}
-        \end{equation}
-        \item<1> \scriptsize{预测区间归一化平均宽度(Prediction Interval Normalized Average Width, PINAW)}
-        \begin{equation}
-            PINEW = \frac{1}{rN} \sum_{i=1}^{N} (U_i - L_i)
-        \end{equation}
-    \end{itemize}
-    \visible<2>{
-    \begin{equation}
-        \begin{aligned}
-            CWC &= PINAW * (1 + \gamma e^{\eta(PICP-\mu)}) \\
-            \text{where } \gamma &=
-                            \left\{
-                                \begin{array}{rcl}
-                                0 \ PICP \geq \mu \\
-                                1 \ PICP < \mu
-                                \end{array}
-                            \right.
-        \end{aligned}
-    \end{equation}}
-\end{itemize}
-\bigskip
-\end{frame}
-
 
 \begin{frame}
 \frametitle{区间预测}
@@ -567,7 +423,7 @@
 \frametitle{实验结果与分析(3/4)}
 \framesubtitle{预测效率分析}
 \begin{itemize}
-    \item 剔除超参数优化时间，只考虑模型平均预测时间
+    \item 剔除超参数优化时间，只考虑模型平均训练和预测时间
 \end{itemize}
 \begin{figure}[htb]
     \centering

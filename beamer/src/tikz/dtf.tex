@@ -9,7 +9,7 @@
 \draw[->,thick,black!70] (0,0,0) -- (0,6.5,0) node[below right] {时间};
 \draw[->,thick] (0,0,0) -- (0,0,2) node[above] {Load(\%)};
 \foreach \y in {0.5,1.5,...,5.5}{
-\draw [cyan!50, domain=0:2*pi,samples=200,smooth]
+\draw [cyan!100, domain=0:2*pi,samples=200,smooth]
  plot (\y,\x, {sin(4*\y*\x r)/\y });
 \draw[blue, ultra thick] (\y,6.5,0) -- (\y,6.5,1/\y);
 }

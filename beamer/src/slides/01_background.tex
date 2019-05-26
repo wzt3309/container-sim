@@ -5,40 +5,17 @@
 \begin{frame}
 \frametitle{问题背景}
 \begin{itemize}
-    \item<1-> 虚拟机和容器
+    \item 云计算运行模式：以容器为核心的CaaS
     \begin{itemize}
-        \item<1-> 虚拟机：Hypervisor
-        \item<1-> 容器：Namespace和CGgroups
+        \item 应用能够被简单部署并快速可用
+        \item CaaS因虚拟化产生的性能损耗低：VMware\upcite{felter_updated_2015}和IBM\upcite{cohen_statistical_2013}
     \end{itemize}
-    \item<2-> 云计算运行模式：IaaS，PaaS和SaaS转变到CaaS
-    \begin{itemize}
-        \item<2-> \color{green}{容器简单部署和快速可用}
-        \item<2-> \color{gray}{\sout{安全问题}}
-        \item<2-> \color{gray}{\sout{资源抢占}}
-        \item<2-> \color{blue}{\checkmark CaaS性能损耗低：VMware\upcite{felter_updated_2015}和IBM\upcite{cohen_statistical_2013}}
-    \end{itemize}
-    \item<3-> 能耗优化与绿色计算\upcite{lima_data_2017}
+    \item 能耗优化与绿色计算\upcite{lima_data_2017}
 \end{itemize}
-
 \begin{figure}[htb]
-\visible<1->{
     \centering
-    \begin{minipage}{130pt}
-    \centering
-    \includegraphics[scale=0.41]{figures/fig1_vm_vs_container.jpg}
-    \caption{VM vs Container}
-    \label{fig:fig1}
-    \end{minipage}
-}
-\hspace{20pt}%
-\visible<2->{
-    \begin{minipage}{130pt}
-    \centering
-    \includegraphics[scale=0.3]{figures/fig2_caas.jpg}
+    \includegraphics[scale=0.5]{figures/fig2_caas.jpg}
     \caption{CaaS架构示意图}
     \label{fig:fig2}
-    \end{minipage}
-}
 \end{figure}
-
 \end{frame}

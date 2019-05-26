@@ -1,23 +1,52 @@
 %Title of section
 \section{基于动态伸缩的容器调度策略}
 
+\subsection{问题定义}
+
+\begin{frame}
+\frametitle{问题定义}
+\framesubtitle{调度目标}
+\begin{itemize}
+    \item 最小化CaaS数据中心总能耗
+    \begin{equation}
+    \begin{align*}
+            &\min\quad P_{dc}(t)=\sum_{i=1}^{N_s} P_i(t) \\
+            &s.t.\quad
+            \begin{cases}
+            \sum_{j=1}^{N_{vm}}vm_{(j,i,r)}(t) < S_(i,r),\\
+            \forall i \in [1,N_s],\ \forall r \in \{CPU,Memory,Disk,BW\} \\
+            \\
+            \sum_{k=1}^{N_{c}}c_{(k,j,i,r)}(t) < vm_(j,i,r),\\
+            \forall i \in [1,N_{vm}],\ \forall r \in \{CPU,Memory,Disk,BW\}
+            \end{cases}
+    \end{align*}
+    \end{equation}
+\end{itemize}
+\end{frame}
+
 \subsection{系统结构}
 
 \begin{frame}
 \frametitle{系统结构}
 \framesubtitle{调度系统模型}
-\begin{block}{CaaS架构出现的问题}
+\begin{exampleblock}{调度系统模型设计思路}
 \begin{itemize}
-    \item 同一个应用对应多个容器副本
-    \item 请求增加 $\Rightarrow$ \textbf{容器过载} $\Rightarrow$ 增加容器副本，分流请求，保证SLA
-    \item 请求减小 $\Rightarrow$ \textbf{容器欠载} $\Rightarrow$ 减少容器副本，提升利用率，降低能耗
-\end{itemize}
-\end{block}
-\begin{exampleblock}{解决方案：调度模型}
-\begin{itemize}
-    \item {\color{gray}预测容器负载，主动资源调整 $\Rightarrow$ \textbf{SAC-GPSO-SVM}}
-    \item 负载预测结果与调整阈值 $\Rightarrow$ \textbf{容器扩容、缩容数量}
-    \item 容器迁移、放置以及合并策略 $\Rightarrow$ \textbf{减少虚拟机和服务数量（已激活）}
+    \item 主机状态模块：标记高负载/低负载主机
+    \begin{itemize}
+            \item 高负载主机列表
+            \item 低负载主机列表
+    \end{itemize}
+    \item 容器状态模块
+    \begin{itemize}
+        \item 负载预测结果与调整阈值 $\Rightarrow$ 计算容器扩容、缩容数量
+        \item 从高负载主机列表中选择需要迁移容器
+    \end{itemize}
+    \item 容器调度模块
+     \begin{itemize}
+             \item 为待迁移容器找到目的地
+             \item 基于资源约束条件合并低负载主机上的容器
+             \item 销毁并关闭空载的虚拟机和服务器 $\Rightarrow$ 避免不必要的能耗
+     \end{itemize}
 \end{itemize}
 \end{exampleblock}
 \end{frame}
@@ -34,85 +63,13 @@
 \bigskip
 \end{frame}
 
-\subsection{问题定义}
-
-\begin{frame}
-\frametitle{问题定义}
-\framesubtitle{CaaS架构容器能耗模型}
-\begin{itemize}
-    \item 数据中心在$t$时刻的能耗$P_{dc}(t)$（\textbf{仅考虑服务器}）
-    \begin{equation}
-        P_{dc}(t) = \sum_{i=1}^{N_s} P_i(t)
-    \end{equation}
-    \item 服务器能耗$P_i(t)$，采用CPU能耗模型
-    \begin{equation}
-    \left\{
-        \begin{array}{rcl}
-            P_i(t) &=& a(t)F_p^i(U_i(t)) \\
-            a(t) &\in& \{0,1\}
-        \end{array}
-    \right.
-    \end{equation}
-    \item 服务器CPU利用率$U_i(t)$主要受容器CPU利用率$U_c^{(k,j,i)}(t)$影响
-    \begin{equation}
-        U_i(t) = \sum_{j=1}^{N_{vm}}\sum_{k=1}^{N_c} U_c^{(k,j,i)}(t)
-    \end{equation}
-\end{itemize}
-\end{frame}
-
-
-\begin{frame}
-\frametitle{问题定义}
-\framesubtitle{调度目标}
-\begin{itemize}
-    \item 最小化CaaS数据中心总能耗
-    \begin{equation}
-    \begin{align*}
-            &\min\quad P_{dc}(t)=\sum_{i=1}^{N_s} P_i(t)) \\
-            &s.t.\quad
-            \begin{cases}
-            \sum_{j=1}^{N_{vm}}vm_{(j,i,r)}(t) < S_(i,r),\\
-            \forall i \in [1,N_s],\ \forall r \in \{CPU,Memory,Disk,BW\} \\
-            \\
-            \sum_{k=1}^{N_{c}}c_{(k,j,i,r)}(t) < vm_(j,i,r),\\
-            \forall i \in [1,N_{vm}],\ \forall r \in \{CPU,Memory,Disk,BW\}
-            \end{cases}
-    \end{align*}
-    \end{equation}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{问题定义}
-\framesubtitle{QoS指标}
-\begin{itemize}
-    \item SLA违反率：被分配的CPU资源小于请求的CPU资源量
-    \begin{equation}
-    \begin{align*}
-        &SLA = \sum_{i=1}^{N_s}\sum_{j=1}^{N_{vm}}\sum_{p=1}^{N_v}
-        \frac{CPU_r(vm_{ji},t_p) - CPU_a(vm_{ji},t_p)}{CPU_r(vm_{ji},t_p)} \\
-        &\begin{cases}
-            CPU_r(vm_{ji},t_p) = \sum_{k=1}^{N_c^{ji}}CPU_r(c_{kji},t_p) \\
-            CPU_a(vm_{ji},t_p) = \sum_{k=1}^{N_c^{ji}}CPU_a(c_{kji},t_p)
-        \end{cases}
-    \end{align*}
-    \end{equation}
-    \item 容器对CPU资源的请求量：难以直接获取，需设定\textbf{超量因子（overbooking）}$P_n$
-        \begin{enumerate}
-            \item 从容器负载历史记录中选择一个负载值 $L_{per}$
-            \item 概率 $P(L \le L_{per}) \ge P_n$
-            \item $min(L_{per})$ 即为容器对CPU资源的请求量
-        \end{enumerate}
-\end{itemize}
-\end{frame}
-
 \subsection{调度算法}
 
 \begin{frame}
 \frametitle{调度算法}
-\framesubtitle{负载检测与负载相关性分析}
+\framesubtitle{主机状态模块(1/1)：主机状态标记算法 - 标记主机状态}
 \begin{itemize}
-    \item 负载检测
+    \item 主机状态标记：通过\textbf{静态阈值法}设置$T_{ol}$和$T_{ul}$
     \begin{equation}
         Host\ status =
         \begin{cases}
@@ -120,29 +77,22 @@
             \textbf{Under-Load} \ \ if\ U_i(t) < T_{ul}
         \end{cases}
     \end{equation}
-    \item 负载相关性分析（皮尔森相关系数）：\textbf{容器选择和主机选择算法}
-    \begin{itemize}
-        \item 容器负载历史记录：$X = {x_1,\cdots,x_n}$
-        \item 主机负载历史记录：$Y = {y_1,\cdots,y_n}$
-        \begin{equation}
-            r_{xy} = \frac{\sum_{i=1}^n(x_i - \bar{x})(y_i - \bar{y})}
-            {\sqrt{\sum_{i=1}^n(x_i - \bar{x})^2\sum_{i=1}^n(y_i - \bar{y})^2}}
-        \end{equation}
-    \end{itemize}
 \end{itemize}
 \end{frame}
 
 \begin{frame}
 \frametitle{调度算法}
-\framesubtitle{容器伸缩算法}
+\framesubtitle{容器状态模块(1/2)：容器伸缩算法 - 计算容器扩缩容数量}
 \begin{itemize}
-    \item 应用$V$当前的容器副本集：$\{v_1,\cdots,v_n\}$
-    \item 容器副本负载区间上/下界的集合：$L^u = {l^u_1,\cdots,l^u_n}$ 和 $L^l = {l^l_1,\cdots,l^l_n}$
-    \item 令应用$V$的副本总数$n=n_{now}$，则应用总体负载上下界：$L_v^u = \sum_{i=1}^{n_{now}}l_i^u$ 和 $L_v^l = \sum_{i=1}^{n_{now}}l_i^l$
-    \item 设置应用$V$的总体负载阈值：
+    \item 令应用$V$的当前容器副本总数$n=n_{now}$
+    \begin{itemize}
+        \item 应用$V$负载上界：$L_v^u = \sum_{i=1}^{n_{now}}l_i^u$
+        \item 应用$V$负载下界：$L_v^l = \sum_{i=1}^{n_{now}}l_i^l$
+    \end{itemize}
+    \item 设置用于应用$V$扩缩容的调整阈值为$L_v$
         \begin{itemize}
-            \item 满足公式\ref{eq:lu} $\Rightarrow$ 扩容($L_v$离下界更近)
-            \item 满足公式\ref{eq:ll} $\Rightarrow$ 缩容($L_v$离上界更近)
+            \item 满足公式\ref{eq:lu}(负载落在$L_v$之上) $\Rightarrow$ 扩容 $\lceil \frac{(L_v^u+L_v^l)}{2L_v} - n_{now} \rceil$ 个
+            \item 满足公式\ref{eq:ll}(负载落在$L_v$之下)  $\Rightarrow$ 缩容$\lceil n_{now} - \frac{(L_v^u+L_v^l)}{2L_v} {\color{red} - 1}\rceil$ 个
         \end{itemize}
     \begin{equation}
         \frac{L_v^u - n_{now} \times L_v}{n_{now} \times L_v - L^l_v} > 1
@@ -157,166 +107,75 @@
 
 \begin{frame}
 \frametitle{调度算法}
-\framesubtitle{容器伸缩算法}
-\begin{itemize}
-    \item 满足扩容条件是的扩容数量：
-    \begin{equation}
-        \lceil \frac{(L_v^u+L_v^l)}{2L_v} - n_{now} \rceil
-    \end{equation}
-    \item 满足缩容条件是的缩容数量(至少保留一个副本)：
-    \begin{equation}
-        \lceil n_{now} - \frac{(L_v^u+L_v^l)}{2L_v} {\color{red} - 1}\rceil
-    \end{equation}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{调度算法}
-\framesubtitle{容器选择算法 - 选择需迁移容器}
-\begin{itemize}
-    \item 从高负载主机列表($OLHL$)中选择需要迁移的容器：\textbf{负载高相关性}
-\end{itemize}
-\begin{algorithmic}[1]
-  \Require{$OverLoadHostList(OLHL)$}
-  \Ensure{$SelectedContainerList(SCL)$}
-  \For{$host$ in $OLHL$}    \Comment{遍历高负载主机列表}
-    \State $hostLoadHistory \gets host$.getLoadHistory() \Comment{主机负载记录}
-    \State $containers \gets host$.getContainers()  \Comment{主机上的所有容器}
-    \For{$container$ in $containers$} \Comment{计算容器与主机皮尔森系数}
-      \State $containerLoadHistory \gets container$.getLoadHistory()
-      \State $cor \gets$PearsonCor($containerLoadHistory $, $hostLoadHistory$)
-      \State $cors$.put($container$, $cor$)
-    \EndFor
-    \State $cors$.sort(by=\textbf{cor}, order=\textbf{desc}) \Comment{相关度降序排列}
-    \State $SCL$.add($cors$.first())    \Comment{添加相关度最高的容器}
-  \EndFor \\
-  \Return SCL
-\end{algorithmic}
+\framesubtitle{容器状态模块(2/2)：容器选择算法 - 选择高负载主机上需要迁移容器}
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.52\textwidth]{figures/fig_4_1.jpg}
+    \caption{容器选择算法流程}
+    \label{fig:fig_4_1}
+\end{figure}
 \bigskip
 \end{frame}
 
 \begin{frame}
 \frametitle{调度算法}
-\framesubtitle{容器选择算法 - 选择因缩容需删除的容器}
-\begin{itemize}
-    \item 从CPU利用率最低的开始删除：
-    \begin{itemize}
-        \item \textbf{大部分时间idle $\Rightarrow$ 额外资源浪费}
-        \item \textbf{服务整体影响小 $\Rightarrow$ 延迟抖动小}
-    \end{itemize}
-\end{itemize}
-\begin{algorithmic}[1]
-  \Require{$ScaleDownContainerList(SDCL)$, $ScaleDownNumber(SDN)$}
-  \Ensure{$SelectedContainerList(SCL)$}
-  \For{$container$ in $SDCL$}   \Comment{遍历需要缩容的容器}
-    \State $replicats \gets container$.getReplicats()   \Comment{获得这类容器所有副本}
-    \State $replicats$.sort(by=\textbf{CPU}, order=\textbf{asc})    \Comment{CPU利用率升序排列}
-    \State $sdn \gets$ get for this container from $SDN$    \Comment{获取缩容数量}
-    \State $SCL$.add($replicats[0:sdn]$)    \Comment{选择该类容器前$sdn$个副本}
-    \State $SDCL$.remove(replicats) \Comment{从列表中删除这类容器}
-  \EndFor
-  \State Send Container in $SCL$ to Remove
-  \end{algorithmic}
+\framesubtitle{容器调度模块(1/3)：主机选择算法 - 选择容器迁移目的主机}
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.58\textwidth]{figures/fig_4_2.jpg}
+    \caption{主机选择算法流程}
+    \label{fig:fig_4_2}
+\end{figure}
 \bigskip
-\end{frame}
-
-\begin{frame}[allowframebreaks]
-\frametitle{调度算法}
-\framesubtitle{容器迁移、放置和合并}
-\begin{itemize}
-    \item 主机选择算法(CorHS)：为需要迁移、放置和合并的容器选择目的主机
-\end{itemize}
-\begin{algorithmic}[1]
-   \Require{$AvailableHostList(AHL)$, $Container$, $Threshold(thr) 0<thr<1$}
-   \Ensure{$Destination(Dest)$}
-   \State $find \gets false$
-   \State $containerLoadHistory \gets Container$.getLoadHistory()
-   \While{$!find$}
-     \For{$host$ in $AHL$}  \Comment{遍历候选主机}
-     \State $hostLoadHistory \gets host$.getLoadHistory()\\
-     \Comment{计算容器与候选主机负载相似度}
-     \State $cor \gets$PearsonCor($containerLoadHistory $, $hostLoadHistory$)
-     \If{$cor < thr$} \Comment{相似度低说明容器不会引起主机过载}
-       \If{$host$.allocate($container$)}
-         \State $Dest \gets (host, host$.getVm($container$)$)$
-         \State $find \gets true$
-         \State break
-       \EndIf
-     \EndIf
-   \EndFor
-   \State $thr \gets thr+0.1$ \Comment{找不到目的地，放松阈值条件}
-   \If{$thr > 1$}
-     \State $Dest \gets null$
-   \EndIf
-   \EndWhile \\
-   \Return $Dest$
-\end{algorithmic}
 \end{frame}
 
 \begin{frame}
 \frametitle{调度算法}
-\framesubtitle{容器迁移、放置和合并}
-\begin{itemize}
-    \item 容器迁移和放置：基于CorHS为迁移和放置容器选择目的地策略
-\end{itemize}
-\begin{algorithmic}[1]
-  \Require{$OverloadHostList(OHL)$, $CML$, $ActiveHosts(AHs)$}
-  \Ensure{$DestinationList(DL)$}
-  \State $AvailableHostList(AHL) \gets AHs$.removeAll($OHL$)
-  \State CML.sort(by=\textbf{CPU}, order=\textbf{desc}) \Comment{CPU降序排列待迁移容器列表}
-  \For{$container$ in $CML$}    \Comment{遍历带迁移容器列表}
-    \State $dest \gets$ CorHS($AHL$, $container$, \textbf{default} $thr$)   \Comment{CorHS算法选择目的地}
-    \If{$dest \neq null$}   \Comment{目的地存在，添加迁移关系}
-      \State $CML$.remove($container$)
-      \State $DL$.add(($container$, $dest$))
-    \Else   \Comment{目的地不存在，需要创建新虚拟机}
-      \State \textbf{Send} $container$ to \textbf{VM Creator}
-    \EndIf
-  \EndFor\\
-  \Return $DL$
-  \end{algorithmic}
+\framesubtitle{容器调度模块(2/3)：容器迁移和放置算法 - 迁移高负载主机上容器、放置新增容器}
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figures/fig_4_3.jpg}
+    \caption{容器迁移和放置算法流程}
+    \label{fig:fig_4_3}
+\end{figure}
 \end{frame}
 
-\begin{frame}[allowframebreaks]
+\begin{frame}
 \frametitle{调度算法}
-\framesubtitle{容器迁移、放置和合并}
-\begin{itemize}
-    \item 容器合并：基于CorHS将欠载主机上的容器进行合并的策略
-\end{itemize}
-\begin{algorithmic}[1]
-  \Require
-     $DestinationList(DL)$,
-     $UnderloadHostList(UHL)$, $ActiveHosts(AHs)$
-  \Ensure{$ContainersToMigrate(CTM)$}   \Comment{所有需要迁移或合并的容器}
-  \State $AvailableHostList(AHL) \gets AHs$.removeAll(hosts in $DL$)
-  \State $CTM$.addAll($DL$) \Comment{先添加因过载迁移需要迁移容器}
-  \State $UHL$.sort(by=\textbf{CPU}, order=\textbf{asc})
-  \For{$host$ in $UHL$} \Comment{遍历欠载主机}
-    \If{$host$ is in $DL$}  \Comment{如果主机在过载迁移目的地中(\textbf{DL})}
-      \State \textbf{continue}
-    \Else
-      \State $AHL$.remove($host$)   \Comment{暂时从$AHL$移除该主机}
-      \State $containers \gets host$.getContainers()
-      \For{$container$ in $containers$} \Comment{为全部容器选择新目的地}
-        \State $dest \gets$ CorHS($AHL$, $container$)
-        \If{$dest \neq null$}   \Comment{将迁移关系添加到临时列表}
-          \State $containers$.remove($container$)
-          \State $tempDestList$.add(($container$, $dest$))
-        \EndIf
-      \EndFor
-      \If{$containers$.size() is equal to $0$}  \Comment{容器都可以被合并}
-        \State $CTM$.addAll($tempDestList$) \Comment{$CTM$中加入需合并的容器}
-        \State \textbf{Send} $host$ to \textbf{UL Host Deactivator} \Comment{请求关闭该主机}
-      \Else
-        \State $AHL$.add($host$) \Comment{将主机加回到$AHL$ \textbf{line 8}}
-      \EndIf
-    \EndIf
-  \EndFor\\
-  \Return $CTM$
-  \end{algorithmic}
+\framesubtitle{容器调度模块(3/3)：容器合并算法 - 合并低负载主机容器}
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.36\textwidth]{figures/fig_4_4.jpg}
+    \caption{容器合并算法流程}
+    \label{fig:fig_4_4}
+\end{figure}
 \end{frame}
 
 \subsection{实验结果与分析}
+
+\begin{frame}
+\frametitle{实验结果与分析}
+\framesubtitle{QoS指标}
+\begin{itemize}
+    \item SLA违反率：容器未分配的CPU资源量在总请求量中的占比
+    \begin{equation}
+    \begin{align*}
+        &SLA = \sum_{i=1}^{N_s}\sum_{j=1}^{N_{vm}}\sum_{p=1}^{N_v}
+        \frac{CPU_r(vm_{ji},t_p) - CPU_a(vm_{ji},t_p)}{CPU_r(vm_{ji},t_p)} \\
+        &\begin{cases}
+            CPU_r(vm_{ji},t_p) = \sum_{k=1}^{N_c^{ji}}CPU_r(c_{kji},t_p) \\
+            CPU_a(vm_{ji},t_p) = \sum_{k=1}^{N_c^{ji}}CPU_a(c_{kji},t_p)
+        \end{cases}
+    \end{align*}
+    \end{equation}
+    \item 容器对CPU资源的请求量：依据\textbf{超量因子}$P_n$从历史记录中获取
+        \begin{enumerate}
+            \item 从容器负载历史记录中选择一个负载值 $L_{per}$
+            \item 概率 $P(L \le L_{per}) \ge P_n$
+            \item $min(L_{per})$ 即为容器对CPU资源的请求量
+        \end{enumerate}
+\end{itemize}
+\end{frame}
 
 \begin{frame}
 \frametitle{实验结果与分析}
